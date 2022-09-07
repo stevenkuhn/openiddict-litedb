@@ -12,12 +12,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout Source
+    - name: Checkout source
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
-    - name: Run Build & Test
+    - name: Build and test
       run: ./build.ps1 --target Test PublishArtifacts
 
     - name: Upload artifacts
