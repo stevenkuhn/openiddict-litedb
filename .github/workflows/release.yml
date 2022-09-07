@@ -23,7 +23,7 @@ jobs:
     - name: Download release assets
       uses: Itsblue/download-release-assets-action@master
       with:
-        repo: ${{ env.GITHUB_REPOSITORY }}
+        repo: ${{ github.repository }}
         version: ${{ github.event.release.id }}
         file: "Sknet.*"
         path: ./artifacts
