@@ -22,6 +22,9 @@ namespace Sknet.OpenIddict.LiteDB;
 public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
     where TScope : OpenIddictLiteDBScope
 {
+    /// <summary>
+    /// Creates a new instance of the <see cref="OpenIddictLiteDBScopeStore{TScope}"/> class.
+    /// </summary>
     public OpenIddictLiteDBScopeStore(
         IOpenIddictLiteDBContext context,
         IOptionsMonitor<OpenIddictLiteDBOptions> options)
@@ -169,7 +172,7 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
             var collection = database.GetCollection<TScope>(Options.CurrentValue.ScopesCollectionName);
 
             var scopes = collection.Query()
-                .Where(entity => entity.Resources.Contains(resource))
+                .Where(entity => entity.Resources != null && entity.Resources.Contains(resource))
                 .ToEnumerable().ToAsyncEnumerable();
 
             await foreach (var scope in scopes)
@@ -180,7 +183,9 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
     }
 
     /// <inheritdoc/>
+#pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
     public virtual async ValueTask<TResult?> GetAsync<TState, TResult>(
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
         Func<IQueryable<TScope>, TState, IQueryable<TResult>> query,
         TState state, CancellationToken cancellationToken)
     {

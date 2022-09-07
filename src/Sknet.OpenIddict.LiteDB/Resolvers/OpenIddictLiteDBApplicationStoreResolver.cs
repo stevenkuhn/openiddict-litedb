@@ -23,6 +23,9 @@ public class OpenIddictLiteDBApplicationStoreResolver : IOpenIddictApplicationSt
     private readonly ConcurrentDictionary<Type, Type> _cache = new ConcurrentDictionary<Type, Type>();
     private readonly IServiceProvider _provider;
 
+    /// <summary>
+    /// Creates a new instance of the <see cref="OpenIddictLiteDBApplicationStoreResolver"/> class.
+    /// </summary>
     public OpenIddictLiteDBApplicationStoreResolver(IServiceProvider provider)
         => _provider = provider ?? throw new ArgumentNullException(nameof(provider));
 

@@ -22,6 +22,9 @@ namespace Sknet.OpenIddict.LiteDB;
 public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAuthorizationStore<TAuthorization>
     where TAuthorization : OpenIddictLiteDBAuthorization
 {
+    /// <summary>
+    /// Creates a new instance of the <see cref="OpenIddictLiteDBAuthorizationStore{TAuthorization}"/> class.
+    /// </summary>
     public OpenIddictLiteDBAuthorizationStore(
         IOpenIddictLiteDBContext context,
         IOptionsMonitor<OpenIddictLiteDBOptions> options)
@@ -262,7 +265,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
                     entity.ApplicationId == new ObjectId(client) &&
                     entity.Status == status &&
                     entity.Type == type &&
-                    Enumerable.All(scopes, scope => entity.Scopes.Contains(scope)))
+                    Enumerable.All(scopes, scope => entity.Scopes != null && entity.Scopes.Contains(scope)))
                 .ToEnumerable().ToAsyncEnumerable();
 
             await foreach (var authorization in authorizations)
@@ -357,7 +360,9 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
     }
 
     /// <inheritdoc/>
+#pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
     public virtual async ValueTask<TResult?> GetAsync<TState, TResult>(
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
         Func<IQueryable<TAuthorization>, TState, IQueryable<TResult>> query,
         TState state, CancellationToken cancellationToken)
     {
@@ -523,7 +528,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
+    public virtual ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
 

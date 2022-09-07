@@ -22,6 +22,9 @@ namespace Sknet.OpenIddict.LiteDB;
 public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
     where TToken : OpenIddictLiteDBToken
 {
+    /// <summary>
+    /// Creates a new instance of the <see cref="OpenIddictLiteDBTokenStore{TToken}"/> class.
+    /// </summary>
     public OpenIddictLiteDBTokenStore(
         IOpenIddictLiteDBContext context,
         IOptionsMonitor<OpenIddictLiteDBOptions> options)
@@ -344,7 +347,9 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
     }
 
     /// <inheritdoc/>
+#pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
     public virtual async ValueTask<TResult?> GetAsync<TState, TResult>(
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
         Func<IQueryable<TToken>, TState, IQueryable<TResult>> query,
         TState state, CancellationToken cancellationToken)
     {
@@ -564,7 +569,7 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
+    public virtual ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
 

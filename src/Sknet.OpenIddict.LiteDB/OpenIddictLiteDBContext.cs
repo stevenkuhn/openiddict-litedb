@@ -21,6 +21,9 @@ public class OpenIddictLiteDBContext : IOpenIddictLiteDBContext
     private readonly IOptionsMonitor<OpenIddictLiteDBOptions> _options;
     private readonly IServiceProvider _provider;
 
+    /// <summary>
+    /// Creates a new instance of the <see cref="OpenIddictLiteDBContext"/> class.
+    /// </summary>
     public OpenIddictLiteDBContext(
         IOptionsMonitor<OpenIddictLiteDBOptions> options,
         IServiceProvider provider)

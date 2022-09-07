@@ -22,6 +22,9 @@ namespace Sknet.OpenIddict.LiteDB;
 public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplicationStore<TApplication>
     where TApplication : OpenIddictLiteDBApplication
 {
+    /// <summary>
+    /// Creates a new instance of the <see cref="OpenIddictLiteDBApplicationStore{TApplication}"/> class.
+    /// </summary>
     public OpenIddictLiteDBApplicationStore(
         IOpenIddictLiteDBContext context,
         IOptionsMonitor<OpenIddictLiteDBOptions> options)
@@ -150,7 +153,7 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
             var collection = database.GetCollection<TApplication>(Options.CurrentValue.ApplicationsCollectionName);
 
             var applications = collection.Query()
-                .Where(entity => entity.PostLogoutRedirectUris.Contains(address))
+                .Where(entity => entity.PostLogoutRedirectUris != null && entity.PostLogoutRedirectUris.Contains(address))
                 .ToEnumerable().ToAsyncEnumerable();
 
             await foreach (var application in applications)
@@ -177,7 +180,7 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
             var collection = database.GetCollection<TApplication>(Options.CurrentValue.ApplicationsCollectionName);
 
             var applications = collection.Query()
-                .Where(entity => entity.RedirectUris.Contains(address))
+                .Where(entity => entity.RedirectUris != null && entity.RedirectUris.Contains(address))
                 .ToEnumerable().ToAsyncEnumerable();
 
             await foreach (var application in applications)
@@ -188,7 +191,9 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
     }
 
     /// <inheritdoc/>
+#pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
     public virtual async ValueTask<TResult?> GetAsync<TState, TResult>(
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
         Func<IQueryable<TApplication>, TState, IQueryable<TResult>> query,
         TState state, CancellationToken cancellationToken)
     {
