@@ -1,0 +1,15 @@
+﻿global using LiteDB;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Options;
+global using OpenIddict.Abstractions;
+global using OpenIddict.Core;
+global using Sknet.OpenIddict.LiteDB;
+global using Sknet.OpenIddict.LiteDB.Models;
+global using System.Collections.Concurrent;
+global using System.Collections.Immutable;
+global using System.ComponentModel;
+global using System.Globalization;
+global using System.Runtime.CompilerServices;
+global using System.Text.Json;
+global using static OpenIddict.Abstractions.OpenIddictExceptions;

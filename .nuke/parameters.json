@@ -1,0 +1,4 @@
+{
+  "$schema": "./build.schema.json",
+  "Solution": "Sknet.Openiddict.LiteDB.sln"
+}
