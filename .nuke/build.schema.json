@@ -22,6 +22,10 @@
           "type": "string",
           "description": "GitHub access token used for creating a new or updating an existing release"
         },
+        "GitHubRepository": {
+          "type": "string",
+          "description": "GitHub repository owner and name used for creating a new or updating an existing release. For example: 'stevenkuhn/openiddict-litedb'"
+        },
         "Help": {
           "type": "boolean",
           "description": "Shows the help text for this build assembly"
@@ -53,11 +57,11 @@
         },
         "NuGetApiKey": {
           "type": "string",
-          "description": "NuGet API key used to pushing the Sdk NuGet package"
+          "description": "NuGet API key used to pushing the NuGet package"
         },
         "NuGetSource": {
           "type": "string",
-          "description": "NuGet source used for pushing the Sdk NuGet package. Default is NuGet.org"
+          "description": "NuGet source used for pushing the NuGet package. Default is NuGet.org"
         },
         "Partition": {
           "type": "string",
@@ -88,6 +92,7 @@
               "Compile",
               "PublishArtifacts",
               "PublishToGitHub",
+              "PublishToNuGetFeed",
               "Restore",
               "Test"
             ]
@@ -107,6 +112,7 @@
               "Compile",
               "PublishArtifacts",
               "PublishToGitHub",
+              "PublishToNuGetFeed",
               "Restore",
               "Test"
             ]

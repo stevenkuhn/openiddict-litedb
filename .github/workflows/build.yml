@@ -51,6 +51,7 @@ jobs:
     - name: Create release
       env:
         GitHub_Access_Token: ${{ secrets.GITHUB_TOKEN }}
+        GitHub_Repository: ${{ env.GITHUB_REPOSITORY }}
       run: ./build.sh --target PublishToGitHub --skip PublishArtifacts
 
 
