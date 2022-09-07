@@ -23,8 +23,8 @@ class Build : NukeBuild
     static AbsolutePath TestsDirectory => RootDirectory / "test";
     static AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
 
-    const string GitHubRepositoryName = "InRuleGitStorage";
-    const string GitHubRepositoryOwner = "openiddict-litedb";
+    const string GitHubRepositoryName = "openiddict-litedb";
+    const string GitHubRepositoryOwner = "stevenkuhn";
 
     readonly string[] NuGetRestoreSources = new[] {
         "https://api.nuget.org/v3/index.json"
