@@ -87,6 +87,7 @@
               "Clean",
               "Compile",
               "PublishArtifacts",
+              "PublishToGitHub",
               "Restore",
               "Test"
             ]
@@ -105,6 +106,7 @@
               "Clean",
               "Compile",
               "PublishArtifacts",
+              "PublishToGitHub",
               "Restore",
               "Test"
             ]
