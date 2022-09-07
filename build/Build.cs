@@ -1,16 +1,6 @@
-using System;
-using System.Linq;
-using Newtonsoft.Json;
-using Nuke.Common;
-using Nuke.Common.CI;
+[ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
 {
-    /// Support plugins are available for:
-    ///   - JetBrains ReSharper        https://nuke.build/resharper
-    ///   - JetBrains Rider            https://nuke.build/rider
-    ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-    ///   - Microsoft VSCode           https://nuke.build/vscode
-
     public static int Main () => Execute<Build>(x => x.Compile);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
@@ -61,6 +51,7 @@ class Build : NukeBuild
         });
 
     Target Restore => _ => _
+        .DependsOn(Clean)
         .Executes(() =>
         {
             Log.Debug("Restoring NuGet packages for solution...");
@@ -86,4 +77,26 @@ class Build : NukeBuild
                 .EnableNoRestore());
         });
 
+    Target Test => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            Log.Debug("Running tests for solution...");
+            DotNetTest(s => s
+                .SetProjectFile(Solution)
+                .SetConfiguration(Configuration)
+                .EnableNoBuild()
+                .EnableNoRestore());
+        });
+
+    Target PublishArtifacts => _ => _
+        .DependsOn(Compile)
+        .After(Test)
+        .Executes(() =>
+        {
+            Log.Debug("Publishing artifacts to the artifacts folder...");
+            SourceDirectory
+                .GlobFiles($"**/{Configuration}/**/Sknet.*.{GitVersion.SemVer}.*nupkg")
+                .ForEach(file => CopyFileToDirectory(file, ArtifactsDirectory));
+        });
 }

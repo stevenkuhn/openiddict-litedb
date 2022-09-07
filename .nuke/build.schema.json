@@ -86,7 +86,9 @@
             "enum": [
               "Clean",
               "Compile",
-              "Restore"
+              "PublishArtifacts",
+              "Restore",
+              "Test"
             ]
           }
         },
@@ -102,7 +104,9 @@
             "enum": [
               "Clean",
               "Compile",
-              "Restore"
+              "PublishArtifacts",
+              "Restore",
+              "Test"
             ]
           }
         },
