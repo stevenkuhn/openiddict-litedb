@@ -7,6 +7,7 @@ class Build : NukeBuild
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Parameter("GitHub access token used for creating a new or updating an existing release.")]
+    [Secret]
     readonly string GitHubAccessToken;
 
     [Parameter("GitHub repository owner and name used for creating a new or updating an existing release. For example: 'stevenkuhn/openiddict-litedb'.")]
@@ -16,6 +17,7 @@ class Build : NukeBuild
     readonly string NuGetSource = "https://api.nuget.org/v3/index.json";
 
     [Parameter("NuGet API key used to pushing the NuGet package.")]
+    [Secret]
     readonly string NuGetApiKey;
 
     [Solution] readonly Solution Solution;

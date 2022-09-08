@@ -20,7 +20,8 @@
         },
         "GitHubAccessToken": {
           "type": "string",
-          "description": "GitHub access token used for creating a new or updating an existing release"
+          "description": "GitHub access token used for creating a new or updating an existing release",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
         },
         "GitHubRepository": {
           "type": "string",
@@ -57,7 +58,8 @@
         },
         "NuGetApiKey": {
           "type": "string",
-          "description": "NuGet API key used to pushing the NuGet package"
+          "description": "NuGet API key used to pushing the NuGet package",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
         },
         "NuGetSource": {
           "type": "string",

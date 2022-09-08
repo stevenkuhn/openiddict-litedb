@@ -49,10 +49,9 @@ jobs:
         path: artifacts
 
     - name: Create release
-      env:
-        GitHub_Access_Token: ${{ secrets.GITHUB_TOKEN }}
-        GitHub_Repository: ${{ github.repository }}
-      run: ./build.sh --target PublishToGitHub --skip PublishArtifacts
-
-
-
+      run: > 
+        ./build.sh 
+          --target PublishToGitHub 
+          --skip PublishArtifacts
+          --github-access-token ${{ secrets.GITHUB_TOKEN }}
+          --github-repository ${{ github.repository }}
