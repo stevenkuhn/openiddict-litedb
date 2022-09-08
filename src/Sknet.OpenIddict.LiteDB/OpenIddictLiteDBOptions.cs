@@ -21,14 +21,14 @@ namespace Sknet.OpenIddict.LiteDB;
 public class OpenIddictLiteDBOptions
 {
     /// <summary>
-    /// Gets or sets the name of the applications collection (by default, openiddict.applications).
+    /// Gets or sets the name of the applications collection (by default, openiddict_applications).
     /// </summary>
-    public string ApplicationsCollectionName { get; set; } = "openiddict.applications";
+    public string ApplicationsCollectionName { get; set; } = "openiddict_applications";
 
     /// <summary>
-    /// Gets or sets the name of the authorizations collection (by default, openiddict.authorizations).
+    /// Gets or sets the name of the authorizations collection (by default, openiddict_authorizations).
     /// </summary>
-    public string AuthorizationsCollectionName { get; set; } = "openiddict.authorizations";
+    public string AuthorizationsCollectionName { get; set; } = "openiddict_authorizations";
 
     /// <summary>
     /// Gets or sets the <see cref="ILiteDatabase"/> used by the OpenIddict stores.
@@ -37,12 +37,12 @@ public class OpenIddictLiteDBOptions
     public ILiteDatabase? Database { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the scopes collection (by default, openiddict.scopes).
+    /// Gets or sets the name of the scopes collection (by default, openiddict_scopes).
     /// </summary>
-    public string ScopesCollectionName { get; set; } = "openiddict.scopes";
+    public string ScopesCollectionName { get; set; } = "openiddict_scopes";
 
     /// <summary>
-    /// Gets or sets the name of the tokens collection (by default, openiddict.tokens).
+    /// Gets or sets the name of the tokens collection (by default, openiddict_tokens).
     /// </summary>
-    public string TokensCollectionName { get; set; } = "openiddict.tokens";
+    public string TokensCollectionName { get; set; } = "openiddict_tokens";
 }
