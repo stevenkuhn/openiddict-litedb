@@ -69,7 +69,7 @@ public class OpenIddictLiteDBToken
     /// Gets or sets the additional properties associated with the current token.
     /// </summary>
     [BsonField("properties")]
-    public virtual IReadOnlyDictionary<string, JsonElement>? Properties { get; set; }
+    public virtual ImmutableDictionary<string, JsonElement>? Properties { get; set; }
 
     /// <summary>
     /// Gets or sets the UTC redemption date of the current token.

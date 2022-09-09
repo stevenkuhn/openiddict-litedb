@@ -277,12 +277,10 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
 
         if (application.DisplayNames is not { Count: > 0 })
         {
-            return new(ImmutableDictionary.Create<CultureInfo, string>());
+            return new(ImmutableDictionary<CultureInfo, string>.Empty);
         }
 
-        return new(application.DisplayNames.ToImmutableDictionary(
-            pair => CultureInfo.GetCultureInfo(pair.Key),
-            pair => pair.Value));
+        return new(application.DisplayNames);
     }
 
     /// <inheritdoc/>
@@ -305,12 +303,12 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
             throw new ArgumentNullException(nameof(application));
         }
 
-        if (application.Permissions is not { Count: > 0 })
+        if (application.Permissions is not { Length: > 0 })
         {
-            return new(ImmutableArray.Create<string>());
+            return new(ImmutableArray<string>.Empty);
         }
 
-        return new(application.Permissions.ToImmutableArray());
+        return new(application.Permissions.Value);
     }
 
     /// <inheritdoc/>
@@ -322,12 +320,12 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
             throw new ArgumentNullException(nameof(application));
         }
 
-        if (application.PostLogoutRedirectUris is not { Count: > 0 })
+        if (application.PostLogoutRedirectUris is not { Length: > 0 })
         {
-            return new(ImmutableArray.Create<string>());
+            return new(ImmutableArray<string>.Empty);
         }
 
-        return new(application.PostLogoutRedirectUris.ToImmutableArray());
+        return new(application.PostLogoutRedirectUris.Value);
     }
 
     /// <inheritdoc/>
@@ -340,10 +338,10 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
 
         if (application.Properties is null || application.Properties.Count == 0)
         {
-            return new(ImmutableDictionary.Create<string, JsonElement>());
+            return new(ImmutableDictionary<string, JsonElement>.Empty);
         }
 
-        return new(application.Properties.ToImmutableDictionary());
+        return new(application.Properties);
     }
 
     /// <inheritdoc/>
@@ -355,12 +353,12 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
             throw new ArgumentNullException(nameof(application));
         }
 
-        if (application.RedirectUris is not { Count: > 0 })
+        if (application.RedirectUris is not { Length: > 0 })
         {
-            return new(ImmutableArray.Create<string>());
+            return new(ImmutableArray<string>.Empty);
         }
 
-        return new(application.RedirectUris.ToImmutableArray());
+        return new(application.RedirectUris.Value);
     }
 
     /// <inheritdoc/>
@@ -371,12 +369,12 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
             throw new ArgumentNullException(nameof(application));
         }
 
-        if (application.Requirements is not { Count: > 0 })
+        if (application.Requirements is not { Length: > 0 })
         {
-            return new(ImmutableArray.Create<string>());
+            return new(ImmutableArray<string>.Empty);
         }
 
-        return new(application.Requirements.ToImmutableArray());
+        return new(application.Requirements.Value);
     }
 
     /// <inheritdoc/>
@@ -519,14 +517,10 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
         if (names is not { Count: > 0 })
         {
             application.DisplayNames = null;
-
             return default;
         }
 
-        application.DisplayNames = names.ToImmutableDictionary(
-            pair => pair.Key.Name,
-            pair => pair.Value);
-
+        application.DisplayNames = names;
         return default;
     }
 
@@ -541,12 +535,10 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
         if (permissions.IsDefaultOrEmpty)
         {
             application.Permissions = null;
-
             return default;
         }
 
-        application.Permissions = permissions.ToImmutableList();
-
+        application.Permissions = permissions;
         return default;
     }
 
@@ -562,12 +554,10 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
         if (addresses.IsDefaultOrEmpty)
         {
             application.PostLogoutRedirectUris = null;
-
             return default;
         }
 
-        application.PostLogoutRedirectUris = addresses.ToImmutableList();
-
+        application.PostLogoutRedirectUris = addresses;
         return default;
     }
 
@@ -583,12 +573,10 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
         if (properties is not { Count: > 0 })
         {
             application.Properties = null;
-
             return default;
         }
 
         application.Properties = properties;
-
         return default;
     }
 
@@ -604,12 +592,10 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
         if (addresses.IsDefaultOrEmpty)
         {
             application.RedirectUris = null;
-
             return default;
         }
 
-        application.RedirectUris = addresses.ToImmutableList();
-
+        application.RedirectUris = addresses;
         return default;
     }
 
@@ -625,12 +611,10 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
         if (requirements.IsDefaultOrEmpty)
         {
             application.Requirements = null;
-
             return default;
         }
 
-        application.Requirements = requirements.ToImmutableList();
-
+        application.Requirements = requirements;
         return default;
     }
 

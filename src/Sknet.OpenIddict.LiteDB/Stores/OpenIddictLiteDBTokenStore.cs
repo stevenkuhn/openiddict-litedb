@@ -444,10 +444,10 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
 
         if (token.Properties is null || token.Properties.Count == 0)
         {
-            return new(ImmutableDictionary.Create<string, JsonElement>());
+            return new(ImmutableDictionary<string, JsonElement>.Empty);
         }
 
-        return new(token.Properties.ToImmutableDictionary());
+        return new(token.Properties);
     }
 
     /// <inheritdoc/>
@@ -633,7 +633,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         {
             token.ApplicationId = new ObjectId(identifier);
         }
-
         else
         {
             token.ApplicationId = ObjectId.Empty;
@@ -654,7 +653,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         {
             token.AuthorizationId = new ObjectId(identifier);
         }
-
         else
         {
             token.AuthorizationId = ObjectId.Empty;
@@ -672,7 +670,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.CreationDate = date?.UtcDateTime;
-
         return default;
     }
 
@@ -685,7 +682,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.ExpirationDate = date?.UtcDateTime;
-
         return default;
     }
 
@@ -698,7 +694,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.Payload = payload;
-
         return default;
     }
 
@@ -714,12 +709,10 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         if (properties is not { Count: > 0 })
         {
             token.Properties = null;
-
             return default;
         }
 
         token.Properties = properties;
-
         return default;
     }
 
@@ -732,7 +725,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.RedemptionDate = date?.UtcDateTime;
-
         return default;
     }
 
@@ -745,7 +737,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.ReferenceId = identifier;
-
         return default;
     }
 
@@ -758,7 +749,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.Status = status;
-
         return default;
     }
 
@@ -771,7 +761,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.Subject = subject;
-
         return default;
     }
 
@@ -784,7 +773,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.Type = type;
-
         return default;
     }
 

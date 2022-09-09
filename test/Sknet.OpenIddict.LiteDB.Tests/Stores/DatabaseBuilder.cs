@@ -13,6 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using LiteDB;
+using LiteDB.Engine;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Globalization;
+using System.Text.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
+
 namespace Sknet.OpenIddict.LiteDB.Tests;
 
 public class DatabaseBuilder
@@ -36,7 +44,7 @@ public class DatabaseBuilder
 
     public ILiteDatabase Build()
     {
-        var database = new LiteDatabase(":memory:");
+        var database = new OpenIddictLiteDatabase(":memory:");
         var options = new OpenIddictLiteDBOptions();
 
         database

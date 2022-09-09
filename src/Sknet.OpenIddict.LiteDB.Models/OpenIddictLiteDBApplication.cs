@@ -57,8 +57,8 @@ public class OpenIddictLiteDBApplication
     /// Gets or sets the localized display names associated with the current application.
     /// </summary>
     [BsonField("display_names")]
-    public virtual IReadOnlyDictionary<string, string>? DisplayNames { get; set; }
-        = ImmutableDictionary.Create<string, string>();
+    public virtual ImmutableDictionary<CultureInfo, string>? DisplayNames { get; set; }
+        = ImmutableDictionary.Create<CultureInfo, string>();
 
     /// <summary>
     /// Gets or sets the unique identifier associated with the current application.
@@ -70,35 +70,34 @@ public class OpenIddictLiteDBApplication
     /// Gets or sets the permissions associated with the current application.
     /// </summary>
     [BsonField("permissions")]
-    public virtual IReadOnlyList<string>? Permissions { get; set; } = ImmutableList.Create<string>();
+    public virtual ImmutableArray<string>? Permissions { get; set; } = ImmutableArray.Create<string>();
 
     /// <summary>
     /// Gets or sets the logout callback URLs associated with the current application.
     /// </summary>
     [BsonField("post_logout_redirect_uris")]
-    public virtual IReadOnlyList<string>? PostLogoutRedirectUris { get; set; } = ImmutableList.Create<string>();
+    public virtual ImmutableArray<string>? PostLogoutRedirectUris { get; set; } = ImmutableArray.Create<string>();
 
     /// <summary>
     /// Gets or sets the additional properties associated with the current application.
     /// </summary>
     [BsonField("properties")]
-    public virtual IReadOnlyDictionary<string, JsonElement>? Properties { get; set; }
+    public virtual ImmutableDictionary<string, JsonElement>? Properties { get; set; }
 
     /// <summary>
     /// Gets or sets the callback URLs associated with the current application.
     /// </summary>
     [BsonField("redirect_uris")]
-    public virtual IReadOnlyList<string>? RedirectUris { get; set; } = ImmutableList.Create<string>();
+    public virtual ImmutableArray<string>? RedirectUris { get; set; } = ImmutableArray.Create<string>();
 
     /// <summary>
     /// Gets or sets the requirements associated with the current application.
     /// </summary>
     [BsonField("requirements")]
-    public virtual IReadOnlyList<string>? Requirements { get; set; } = ImmutableList.Create<string>();
+    public virtual ImmutableArray<string>? Requirements { get; set; } = ImmutableArray.Create<string>();
 
     /// <summary>
-    /// Gets or sets the application type
-    /// associated with the current application.
+    /// Gets or sets the application type associated with the current application.
     /// </summary>
     [BsonField("type")]
     public virtual string? Type { get; set; }

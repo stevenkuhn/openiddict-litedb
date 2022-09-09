@@ -414,10 +414,10 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
 
         if (authorization.Properties is null || authorization.Properties.Count == 0)
         {
-            return new(ImmutableDictionary.Create<string, JsonElement>());
+            return new(ImmutableDictionary<string, JsonElement>.Empty);
         }
 
-        return new(authorization.Properties.ToImmutableDictionary());
+        return new(authorization.Properties);
     }
 
     /// <inheritdoc/>
@@ -428,12 +428,12 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
             throw new ArgumentNullException(nameof(authorization));
         }
 
-        if (authorization.Scopes is not { Count: > 0 })
+        if (authorization.Scopes is not { Length: > 0 })
         {
-            return new(ImmutableArray.Create<string>());
+            return new(ImmutableArray<string>.Empty);
         }
 
-        return new(authorization.Scopes.ToImmutableArray());
+        return new(authorization.Scopes.Value);
     }
 
     /// <inheritdoc/>
@@ -592,7 +592,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         {
             authorization.ApplicationId = new ObjectId(identifier);
         }
-
         else
         {
             authorization.ApplicationId = ObjectId.Empty;
@@ -611,7 +610,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         }
 
         authorization.CreationDate = date?.UtcDateTime;
-
         return default;
     }
 
@@ -627,12 +625,10 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         if (properties is not { Count: > 0 })
         {
             authorization.Properties = null;
-
             return default;
         }
 
         authorization.Properties = properties;
-
         return default;
     }
 
@@ -648,12 +644,10 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         if (scopes.IsDefaultOrEmpty)
         {
             authorization.Scopes = null;
-
             return default;
         }
 
-        authorization.Scopes = scopes.ToImmutableList();
-
+        authorization.Scopes = scopes;
         return default;
     }
 
@@ -666,7 +660,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         }
 
         authorization.Status = status;
-
         return default;
     }
 
@@ -679,7 +672,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         }
 
         authorization.Subject = subject;
-
         return default;
     }
 
@@ -692,7 +684,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         }
 
         authorization.Type = type;
-
         return default;
     }
 

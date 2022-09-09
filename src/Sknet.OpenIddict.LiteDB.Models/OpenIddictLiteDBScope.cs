@@ -37,8 +37,8 @@ public class OpenIddictLiteDBScope
     /// Gets or sets the localized public descriptions associated with the current scope.
     /// </summary>
     [BsonField("descriptions")]
-    public virtual IReadOnlyDictionary<string, string>? Descriptions { get; set; }
-        = ImmutableDictionary.Create<string, string>();
+    public virtual ImmutableDictionary<CultureInfo, string>? Descriptions { get; set; }
+        = ImmutableDictionary.Create<CultureInfo, string>();
 
     /// <summary>
     /// Gets or sets the display name associated with the current scope.
@@ -50,8 +50,8 @@ public class OpenIddictLiteDBScope
     /// Gets or sets the localized display names associated with the current scope.
     /// </summary>
     [BsonField("display_names")]
-    public virtual IReadOnlyDictionary<string, string>? DisplayNames { get; set; }
-        = ImmutableDictionary.Create<string, string>();
+    public virtual ImmutableDictionary<CultureInfo, string>? DisplayNames { get; set; }
+        = ImmutableDictionary.Create<CultureInfo, string>();
 
     /// <summary>
     /// Gets or sets the unique identifier associated with the current scope.
@@ -69,11 +69,11 @@ public class OpenIddictLiteDBScope
     /// Gets or sets the additional properties associated with the current scope.
     /// </summary>
     [BsonField("properties")]
-    public virtual IReadOnlyDictionary<string, JsonElement>? Properties { get; set; }
+    public virtual ImmutableDictionary<string, JsonElement>? Properties { get; set; }
 
     /// <summary>
     /// Gets or sets the resources associated with the current scope.
     /// </summary>
     [BsonField("resources")]
-    public virtual IReadOnlyList<string>? Resources { get; set; } = ImmutableList.Create<string>();
+    public virtual ImmutableArray<string>? Resources { get; set; } = ImmutableArray.Create<string>();
 }
