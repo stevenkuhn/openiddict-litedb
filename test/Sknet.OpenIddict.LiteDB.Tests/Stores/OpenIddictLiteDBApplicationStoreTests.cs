@@ -15,17 +15,23 @@
  */
 namespace Sknet.OpenIddict.LiteDB.Tests;
 
+[UsesVerify]
 public class OpenIddictLiteDBApplicationStoreTests
 {
+    public OpenIddictLiteDBApplicationStoreTests()
+    {
+        Randomizer.Seed = new Random(452856);
+    }
+
     [Fact]
     public async Task CountAsync_ReturnsCorrespondingApplicationCount()
     {
         // Arrange
-        var database = new DatabaseBuilder()
-            .WithApplication("client-id-1")
-            .WithApplication("client-id-2")
-            .WithApplication("client-id-3")
-            .Build();
+        //var database = new DatabaseBuilder()
+        //    .WithApplication("client-id-1")
+        //    .WithApplication("client-id-2")
+        //    .WithApplication("client-id-3")
+        //    .Build();  
 
         var store = new ApplicationStoreBuilder(database).Build();
 
@@ -33,7 +39,20 @@ public class OpenIddictLiteDBApplicationStoreTests
         var result = await store.CountAsync(default);
 
         // Assert
-        Assert.Equal(3, result);
+        await Verify(result);
+    }
+
+    [Fact]
+    public async Task CountAyncWithNullQuery_ThrowsException()
+    {
+        // Arrange
+        var database = new DatabaseBuilder().Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act/Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(
+            "query",
+            () => store.CountAsync<object>(null!, default).AsTask());
     }
 
     [Fact]
@@ -56,4 +75,76 @@ public class OpenIddictLiteDBApplicationStoreTests
         // Assert
         Assert.Equal(1, result);
     }
+
+    [Fact]
+    public async Task CreateAsyncWithNullApplication_ThrowsException()
+    {
+        // Arrange
+        var database = new DatabaseBuilder().Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act/Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(
+            "application",
+            () => store.CreateAsync(null!, default).AsTask());
+    }
+
+    [Fact]
+    public async Task CreateAsync_AddsApplicationToDatabase()
+    {
+        // Arrange
+        var database = new DatabaseBuilder().Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+        var expectedApp = new OpenIddictLiteDBApplication();
+
+        // Act
+        await store.CreateAsync(expectedApp, default);
+        var actualApp = database
+            .GetCollection<OpenIddictLiteDBApplication>("openiddict_applications")
+            .FindById(expectedApp.Id);
+
+        // Assert
+        Assert.NotNull(actualApp);
+        Assert.Equal(expectedApp.Id, actualApp.Id);
+    }
+
+    [Fact]
+    public async Task DeleteAsyncWithNullApplication_ThrowsException()
+    {
+        // Arrange
+        var database = new DatabaseBuilder().Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act/Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(
+            "application",
+            () => store.DeleteAsync(null!, default).AsTask());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesApplicationFromDatabase()
+    {
+        // Arrange
+        var app = new OpenIddictLiteDBApplication() { ClientId = "client-id-2" };
+        var database = new DatabaseBuilder()
+            .WithApplication("client-id-1")
+            .WithApplication(app)
+            .WithApplication("client-id-3")
+            .Build();
+
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act
+        await store.DeleteAsync(app, default);
+
+        // Assert
+        var collection = database.GetCollection<OpenIddictLiteDBApplication>("openiddict_applications");
+        var count = collection.Count();
+        Assert.Equal(2, count);
+        Assert.True(collection.FindAll().All(x => x.ClientId != "client-id-2"));
+    }
+
+    // DeleteAsync with Concurrency issue
+    // DeleteAsync - Deletes authorizations
+    // DeleteAsync - Deletes tokens
 }

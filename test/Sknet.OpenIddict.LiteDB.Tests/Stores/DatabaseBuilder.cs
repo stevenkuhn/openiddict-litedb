@@ -13,14 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using LiteDB;
-using LiteDB.Engine;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Globalization;
-using System.Text.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
-
 namespace Sknet.OpenIddict.LiteDB.Tests;
 
 public class DatabaseBuilder
@@ -33,12 +25,49 @@ public class DatabaseBuilder
         return this;
     }
 
+    /*public DatabaseBuilder WithApplications(int count)
+    {
+        var applications = new Faker<OpenIddictLiteDBApplication>()
+            .RuleFor(x => x.ClientId, f => f.Internet.UserName())
+            .RuleFor(x => x.ClientSecret, f => f.Internet.Password())
+            .RuleFor(x => x.ConcurrencyToken, f => f.Random.Guid().ToString())
+            .RuleFor(x => x.DisplayName, f => f.Commerce.ProductName())
+            .RuleFor(x => x.Permissions, f => f.PickRandom(new[] { "scope1", "scope2", "scope3" }, f.Random.Int(0, 3)).ToImmutableArray())
+            .RuleFor(x => x.PostLogoutRedirectUris, f => f.PickRandom(new[] { "https://example.com" }, f.Random.Int(0, 1)).ToImmutableArray())
+            .RuleFor(x => x.Properties, f => f.PickRandom(new[]
+            { 
+                ImmutableDictionary<string, JsonElement>.Empty,
+                ImmutableDictionary.CreateRange(new[] 
+                { 
+                    new KeyValuePair<string, JsonElement>("key", JsonSerializer.Deserialize<JsonElement>("\"value\""))
+                })
+            }))
+            .RuleFor(x => x.RedirectUris, f => f.PickRandom(new[] 
+            { 
+                ImmutableArray<string>.Empty, 
+                ImmutableArray.Create("https://example.com")
+            }))
+            .RuleFor(x => x.Type, f => f.PickRandom(new[] 
+            { 
+                OpenIddictConstants.ClientTypes.Confidential.ToString(),
+                OpenIddictConstants.ClientTypes.Public.ToString()
+            }));
+
+        _applications.AddRange(applications.Generate(count));
+        return this;
+    }*/
+    
     public DatabaseBuilder WithApplication(string clientId)
     {
-        _applications.Add(new OpenIddictLiteDBApplication()
+        AutoFaker.Configure(builder =>
         {
-            ClientId = clientId
+            builder.WithLocale("en_US");
         });
+
+        _applications.Add(new AutoFaker<OpenIddictLiteDBApplication>()
+            //.RuleFor(x => x.ClientId, clientId)
+            .Generate());
+            
         return this;
     }
 
