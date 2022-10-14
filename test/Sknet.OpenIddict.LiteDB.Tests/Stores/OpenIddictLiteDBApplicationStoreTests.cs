@@ -27,11 +27,9 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task CountAsync_ReturnsCorrespondingApplicationCount()
     {
         // Arrange
-        //var database = new DatabaseBuilder()
-        //    .WithApplication("client-id-1")
-        //    .WithApplication("client-id-2")
-        //    .WithApplication("client-id-3")
-        //    .Build();  
+        var database = new DatabaseBuilder()
+            .WithApplications(3)
+            .Build();
 
         var store = new ApplicationStoreBuilder(database).Build();
 
@@ -39,7 +37,7 @@ public class OpenIddictLiteDBApplicationStoreTests
         var result = await store.CountAsync(default);
 
         // Assert
-        await Verify(result);
+        await Verify(result, database);
     }
 
     [Fact]
@@ -60,20 +58,19 @@ public class OpenIddictLiteDBApplicationStoreTests
     {
         // Arrange
         var database = new DatabaseBuilder()
-            .WithApplication("client-id-1")
-            .WithApplication("client-id-2")
-            .WithApplication("client-id-3")
+            .WithApplications(2)
+            .WithApplication("client-id-test")
             .Build();
 
         var store = new ApplicationStoreBuilder(database).Build();
 
         // Act
         var result = await store.CountAsync(
-            query => query.Where(a => a.ClientId  == "client-id-2"),
+            query => query.Where(a => a.ClientId == "client-id-test"),
             default);
 
         // Assert
-        Assert.Equal(1, result);
+        await Verify(result, database);
     }
 
     [Fact]
@@ -95,17 +92,13 @@ public class OpenIddictLiteDBApplicationStoreTests
         // Arrange
         var database = new DatabaseBuilder().Build();
         var store = new ApplicationStoreBuilder(database).Build();
-        var expectedApp = new OpenIddictLiteDBApplication();
+        var application = new ApplicationFaker().Generate();
 
         // Act
-        await store.CreateAsync(expectedApp, default);
-        var actualApp = database
-            .GetCollection<OpenIddictLiteDBApplication>("openiddict_applications")
-            .FindById(expectedApp.Id);
+        await store.CreateAsync(application, default);
 
         // Assert
-        Assert.NotNull(actualApp);
-        Assert.Equal(expectedApp.Id, actualApp.Id);
+        await Verify(database);
     }
 
     [Fact]
@@ -125,23 +118,20 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task DeleteAsync_RemovesApplicationFromDatabase()
     {
         // Arrange
-        var app = new OpenIddictLiteDBApplication() { ClientId = "client-id-2" };
+        var application = new ApplicationFaker().Generate();
         var database = new DatabaseBuilder()
-            .WithApplication("client-id-1")
-            .WithApplication(app)
-            .WithApplication("client-id-3")
+            .WithApplications(2)
+            .WithApplication(application)
             .Build();
-
+        
         var store = new ApplicationStoreBuilder(database).Build();
 
         // Act
-        await store.DeleteAsync(app, default);
+        await store.DeleteAsync(application, default);
 
         // Assert
-        var collection = database.GetCollection<OpenIddictLiteDBApplication>("openiddict_applications");
-        var count = collection.Count();
-        Assert.Equal(2, count);
-        Assert.True(collection.FindAll().All(x => x.ClientId != "client-id-2"));
+        var result = await Verify(database);
+        Assert.DoesNotContain($"client_id: {application.ClientId}", result.Text);
     }
 
     // DeleteAsync with Concurrency issue

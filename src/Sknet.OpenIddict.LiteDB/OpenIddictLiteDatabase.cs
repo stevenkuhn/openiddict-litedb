@@ -56,7 +56,7 @@ public class OpenIddictLiteDatabase : LiteDatabase
             throw new NotImplementedException();
         }
 
-        Mapper.RegisterType<ImmutableDictionary<CultureInfo, string>?>
+        Mapper.RegisterType<ImmutableDictionary<CultureInfo, string>>
         (
             serialize: dictionary =>
             {
@@ -69,11 +69,11 @@ public class OpenIddictLiteDatabase : LiteDatabase
                 }
                 return document;
             },
-            deserialize: bson => bson?.AsDocument.ToImmutableDictionary(
+            deserialize: bson => bson.AsDocument.ToImmutableDictionary(
                 pair => new CultureInfo(pair.Key),
                 pair => pair.Value.AsString)
         );
-        Mapper.RegisterType<ImmutableArray<string>?>
+        Mapper.RegisterType<ImmutableArray<string>>
         (
             serialize: items =>
             {
@@ -86,9 +86,9 @@ public class OpenIddictLiteDatabase : LiteDatabase
                 }
                 return array;
             },
-            deserialize: bson => bson?.AsArray.Select(x => x.AsString).ToImmutableArray()
+            deserialize: bson => bson.AsArray.Select(x => x.AsString).ToImmutableArray()
         );
-        Mapper.RegisterType<ImmutableDictionary<string, JsonElement>?>
+        Mapper.RegisterType<ImmutableDictionary<string, JsonElement>>
         (
             serialize: dictionary =>
             {
@@ -96,9 +96,8 @@ public class OpenIddictLiteDatabase : LiteDatabase
 
                 return JsonSerializer.Serialize(dictionary);
             },
-            deserialize: bson => bson != null
-                ? JsonSerializer.Deserialize<ImmutableDictionary<string, JsonElement>>(bson.AsString)
-                : null
+            deserialize: bson => JsonSerializer.Deserialize<ImmutableDictionary<string, JsonElement>>(bson.AsString)
+                ?? ImmutableDictionary<string, JsonElement>.Empty
         );
     }
 }

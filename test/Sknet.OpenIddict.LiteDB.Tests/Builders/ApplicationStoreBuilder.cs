@@ -26,13 +26,12 @@ public class ApplicationStoreBuilder
 
     public OpenIddictLiteDBApplicationStore<OpenIddictLiteDBApplication> Build()
     {
-        var options = new OpenIddictLiteDBOptions();
-
         var contextMock = new Mock<IOpenIddictLiteDBContext>();
         contextMock
             .Setup(x => x.GetDatabaseAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(_database);
 
+        var options = new OpenIddictLiteDBOptions();
         var optionsMock = new Mock<IOptionsMonitor<OpenIddictLiteDBOptions>>();
         optionsMock
             .SetupGet(x => x.CurrentValue)

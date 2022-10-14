@@ -15,7 +15,6 @@
  */
 namespace Microsoft.Extensions.DependencyInjection;
 
-
 /// <summary>
 /// Exposes extensions allowing to register the OpenIddict LiteDB services.
 /// </summary>
