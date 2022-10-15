@@ -15,7 +15,7 @@
  */
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
-namespace Sknet.OpenIddict.LiteDB.Tests;
+namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 
 public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
 {

@@ -41,13 +41,6 @@ public class VerifyTestFramework : XunitTestFramework
                 methodName: method.Name);
         });
 
-        VerifierSettings
-           .AddExtraSettings(_ =>
-           {
-               var converters = _.Converters;
-               converters.Add(new JsonElementConverter());
-               converters.Add(new JsonDocumentConverter());
-               converters.Add(new JsonPropertyConverter());
-           });
+        VerifySystemJson.Enable();
     }
 }

@@ -1,12 +1,9 @@
-﻿class JsonDocumentConverter :
-    WriteOnlyJsonConverter<JsonDocument>
-{
-    public override void Write(VerifyJsonWriter writer, JsonDocument value) =>
-        writer.Serialize(value.RootElement);
-}
-
-class JsonElementConverter :
-    WriteOnlyJsonConverter<JsonElement>
+﻿/*
+ * MIT License
+ *
+ * Copyright (c) Simon Cropp
+ */
+class JsonElementConverter : WriteOnlyJsonConverter<JsonElement>
 {
     public override void Write(VerifyJsonWriter writer, JsonElement value)
     {
@@ -45,15 +42,5 @@ class JsonElementConverter :
             default:
                 throw new ArgumentOutOfRangeException();
         }
-    }
-}
-
-class JsonPropertyConverter :
-    WriteOnlyJsonConverter<JsonProperty>
-{
-    public override void Write(VerifyJsonWriter writer, JsonProperty value)
-    {
-        writer.WritePropertyName(value.Name);
-        writer.Serialize(value.Value);
     }
 }
