@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Drawing.Drawing2D;
-
 [assembly: TestFramework("Sknet.OpenIddict.LiteDB.Tests.VerifyTestFramework", "Sknet.OpenIddict.LiteDB.Tests")]
 
 namespace Sknet.OpenIddict.LiteDB.Tests;
@@ -26,11 +24,13 @@ public class VerifyTestFramework : XunitTestFramework
     {
         VerifierSettings.DerivePathInfo((sourceFile, projectDirectory, type, method) =>
         {
-            var sourceFilePath = Path.GetDirectoryName(sourceFile);
+            var sourceFilePath = Path.GetDirectoryName(sourceFile)!;
             var sourceFileRelativePath = sourceFilePath.Substring(projectDirectory.Length);
 
             var directory = Path.Combine(
-                Path.GetDirectoryName(NCrunchEnvironment.GetOriginalProjectPath()),
+                NCrunchEnvironment.NCrunchIsResident()
+                    ? Path.GetDirectoryName(NCrunchEnvironment.GetOriginalProjectPath())!
+                    : projectDirectory!,
                 "Snapshots",
                 sourceFileRelativePath
             );
