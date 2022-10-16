@@ -2,40 +2,41 @@
   database: {
     openiddict_applications: [
       {
-        _id: {
-          $oid: 0b836b13e294b427f00b1f76
-        },
-        client_id: cchyaff8g9dgxwqy4kgdw5l5xw9rchr2,
-        client_secret: 85v294xhqbugwpi1a3lkh4h6rc0d6owz,
+        _id: e4c57c132d042e7b5d7eb804,
+        client_id: 3lkh4h6rc0d6owzia8r1opzmznkb488e,
+        client_secret: 7h8v7l4ooax3ja1fvymgq0lelxihxvm3,
         concurrency_token: Guid_1,
-        consent_type: external,
-        display_name: Intelligent Granite Bike,
-        display_names: {},
+        consent_type: implicit,
+        display_name: Rustic Cotton Mouse,
+        display_names: {
+          es: Generic Soft Bacon,
+          fr: Intelligent Fresh Pizza
+        },
         permissions: [
-          scope1,
-          scope3
+          scope1
         ],
         post_logout_redirect_uris: [],
-        properties: {},
+        properties: {"property1":true,"property2":false,"property5":1.1,"property6":"","property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
         redirect_uris: [],
         requirements: [],
         type: confidential
       },
       {
-        _id: {
-          $oid: 49bf3faac7a0ac65d372374f
-        },
-        client_id: k6v0ixw8tpwrzx59calxxpd63ga9z52r,
-        client_secret: crf13n4uje8xuodx27rwwb1vtow1mm8n,
+        _id: 3d08ee3cbecfe24549eeb621,
+        client_id: ga9z52rcrf13n4uje8xuodx27rwwb1vt,
+        client_secret: ow1mm8nm4e7h45p6rdjhgbf3c7se6v0q,
         concurrency_token: Guid_2,
         consent_type: explicit,
-        display_name: Incredible Concrete Bacon,
-        display_names: {},
+        display_name: Handmade Wooden Sausages,
+        display_names: {
+          fr: Fantastic Granite Sausages
+        },
         permissions: [
+          scope3,
           scope1
         ],
         post_logout_redirect_uris: [],
-        properties: {},
+        properties: {"property1":true,"property2":false,"property3":null,"property4":1,"property6":"","property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
         redirect_uris: [],
         requirements: [],
         type: public

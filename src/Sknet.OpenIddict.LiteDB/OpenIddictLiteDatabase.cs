@@ -75,27 +75,16 @@ public class OpenIddictLiteDatabase : LiteDatabase
         );
         Mapper.RegisterType<ImmutableArray<string>>
         (
-            serialize: items =>
-            {
-                if (items == null) { return null; }
-
-                var array = new BsonArray();
-                foreach (var item in items)
-                {
-                    array.Add(item);
-                }
-                return array;
-            },
+            serialize: items => items != null
+                ? new BsonArray(items.Select(x => new BsonValue(x)))
+                : null,
             deserialize: bson => bson.AsArray.Select(x => x.AsString).ToImmutableArray()
         );
         Mapper.RegisterType<ImmutableDictionary<string, JsonElement>>
         (
-            serialize: dictionary =>
-            {
-                if (dictionary == null) { return null; }
-
-                return JsonSerializer.Serialize(dictionary);
-            },
+            serialize: dictionary => dictionary != null
+                ? JsonSerializer.Serialize(dictionary)
+                : null,
             deserialize: bson => JsonSerializer.Deserialize<ImmutableDictionary<string, JsonElement>>(bson.AsString)
                 ?? ImmutableDictionary<string, JsonElement>.Empty
         );

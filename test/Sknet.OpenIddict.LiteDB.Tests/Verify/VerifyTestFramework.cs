@@ -42,5 +42,12 @@ public class VerifyTestFramework : XunitTestFramework
         });
 
         VerifySystemJson.Enable();
+
+        VerifierSettings
+            .AddExtraSettings(_ =>
+            {
+                var converters = _.Converters;
+                converters.Add(new LiteDatabaseConverter());
+            });
     }
 }

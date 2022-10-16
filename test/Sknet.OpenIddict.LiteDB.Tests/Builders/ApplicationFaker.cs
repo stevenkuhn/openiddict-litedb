@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using static OpenIddict.Abstractions.OpenIddictConstants;
-
 namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 
 public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
@@ -27,13 +25,32 @@ public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
             .RuleFor(x => x.ConcurrencyToken, f => f.Random.Guid().ToString())
             .RuleFor(x => x.ConsentType, f => f.PickRandom(new[] { ConsentTypes.Explicit, ConsentTypes.External, ConsentTypes.Implicit, ConsentTypes.Systematic }))
             .RuleFor(x => x.DisplayName, f => f.Commerce.ProductName())
-            .RuleFor(x => x.DisplayNames, f =>
-            {
-                return ImmutableDictionary.Create<CultureInfo, string>();
-            })
-            .RuleFor(x => x.Permissions, f => f.Random.ListItems<string>(new() { "scope1", "scope2", "scope3" }).ToImmutableArray())
+            .RuleFor(x => x.DisplayNames, f => f.Random.ListItems<(CultureInfo Culture, string DisplayName)>(new()
+                {
+                    (CultureInfo.GetCultureInfo("en"), f.Commerce.ProductName()),
+                    (CultureInfo.GetCultureInfo("fr"), f.Commerce.ProductName()),
+                    (CultureInfo.GetCultureInfo("de"), f.Commerce.ProductName()),
+                    (CultureInfo.GetCultureInfo("es"), f.Commerce.ProductName())
+                })
+                .OrderBy(x => x.Culture.Name)
+                .ToImmutableDictionary(x => x.Culture, x => x.DisplayName))
+            .RuleFor(x => x.Permissions, f => f.Random.ListItems<string>(new() { "scope1", "scope2", "scope3" })
+                .ToImmutableArray())
             .RuleFor(x => x.PostLogoutRedirectUris, f => ImmutableArray.Create<string>())
-            .RuleFor(x => x.Properties, f => ImmutableDictionary.Create<string, JsonElement>())
+            .RuleFor(x => x.Properties, f => f.Random.ListItems<(string PropertyName, JsonElement JsonValue)>(new()
+                {
+                    ("property1", JsonDocument.Parse("true").RootElement),
+                    ("property2", JsonDocument.Parse("false").RootElement),
+                    ("property3", JsonDocument.Parse("null").RootElement),
+                    ("property4", JsonDocument.Parse("1").RootElement),
+                    ("property5", JsonDocument.Parse("1.1").RootElement),
+                    ("property6", JsonDocument.Parse(@"""""").RootElement),
+                    ("property7", JsonDocument.Parse(@"""value""").RootElement),
+                    ("property8", JsonDocument.Parse(@"[""value1"", ""value2""]").RootElement),
+                    ("property9", JsonDocument.Parse(@"{""key"": ""value""}").RootElement)
+                })
+                .OrderBy(x => x.PropertyName)
+                .ToImmutableDictionary(x => x.PropertyName, x => x.JsonValue))
             .RuleFor(x => x.RedirectUris, f => ImmutableArray.Create<string>())
             .RuleFor(x => x.Requirements, f => ImmutableArray.Create<string>())
             .RuleFor(x => x.Type, f => f.PickRandom(new[] { ClientTypes.Confidential, ClientTypes.Public }));

@@ -23,14 +23,7 @@ public static class Verifier
         VerifySettings? settings = null,
         [CallerFilePath] string sourceFile = "")
     {
-        var collections = new Dictionary<string, IEnumerable<JsonDocument>>();
-        foreach (var name in database.GetCollectionNames())
-        {
-            var collection = database.GetCollection(name);
-            collections[name] = collection.FindAll().Select(x => JsonDocument.Parse(global::LiteDB.JsonSerializer.Serialize(x)));
-        }
-
-        return VerifyXunit.Verifier.Verify(new { target, database = collections }, settings, sourceFile);
+        return VerifyXunit.Verifier.Verify(new { target, database }, settings, sourceFile);
     }
 
     public static SettingsTask Verify(
@@ -38,13 +31,6 @@ public static class Verifier
         VerifySettings? settings = null,
         [CallerFilePath] string sourceFile = "")
     {
-        var collections = new Dictionary<string, IEnumerable<JsonDocument>>();
-        foreach (var name in database.GetCollectionNames())
-        {
-            var collection = database.GetCollection(name);
-            collections[name] = collection.FindAll().Select(x => JsonDocument.Parse(global::LiteDB.JsonSerializer.Serialize(x)));
-        }
-
-        return VerifyXunit.Verifier.Verify(new { database = collections }, settings, sourceFile);
+        return VerifyXunit.Verifier.Verify(new { database }, settings, sourceFile);
     }
 }
