@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Net;
-
 namespace Sknet.OpenIddict.LiteDB.Tests.Stores;
 
 [UsesVerify]
@@ -59,7 +57,7 @@ public class OpenIddictLiteDBAuthorizationStoreTests
     public async Task CountAsync_WithQuery_ReturnsCorrespondingAuthorizationCount()
     {
         // Arrange
-        var authorization = new AuthorizationFaker().Generate();
+        var authorization = new AuthorizationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithAuthorization()
             .WithAuthorization(authorization)
@@ -82,7 +80,7 @@ public class OpenIddictLiteDBAuthorizationStoreTests
         // Arrange
         var database = new DatabaseBuilder().Build();
         var store = new AuthorizationStoreBuilder(database).Build();
-        var authorization = new AuthorizationFaker().Generate();
+        var authorization = new AuthorizationFaker().UseSeed(3484).Generate();
 
         // Act
         await store.CreateAsync(authorization, default);
@@ -108,7 +106,7 @@ public class OpenIddictLiteDBAuthorizationStoreTests
     public async Task DeleteAsync_RemovesAuthorizationFromDatabase()
     {
         // Arrange
-        var authorization = new AuthorizationFaker().Generate();
+        var authorization = new AuthorizationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithAuthorizations(2)
             .WithAuthorization(authorization)
@@ -128,7 +126,7 @@ public class OpenIddictLiteDBAuthorizationStoreTests
     public async Task DeleteAsync_WithConcurrencyTokenChange_ThrowsException()
     {
         // Arrange
-        var authorization = new AuthorizationFaker().Generate();
+        var authorization = new AuthorizationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithAuthorization(authorization)
             .Build();

@@ -1,102 +1,101 @@
 ﻿{
   target: {
-    ClientId: 6tnv90jtjd9nz7sz7w69vvlubwx44fe4,
-    ClientSecret: 99afr7ztvb5lws2smo54unia7sjc2fo3,
+    ClientId: 5dcevye5ac6rzqz65nhjsxo1ip6yn9s9,
+    ClientSecret: av1tvjf1lw6duxvo3t6349c7pbw6rfi0,
     ConcurrencyToken: Guid_1,
     ConsentType: systematic,
-    DisplayName: Rustic Granite Table,
+    DisplayName: Sleek Fresh Pizza,
     DisplayNames: {
-      de: Intelligent Frozen Tuna,
-      en: Gorgeous Concrete Ball
+      en: Ergonomic Metal Keyboard
     },
-    Id: 23a73613d62bf371f6a500e6,
+    Id: d10323e40007b0ad61f5b9c2,
     Permissions: [
-      scope2,
-      scope1
+      scope3,
+      scope2
     ],
     PostLogoutRedirectUris: [
-      http://lenny.org/executive,
-      https://winfield.org/automotive--outdoors/sharable/bond-markets-units-european-composite-unit-eurco
+      https://marjory.org/plastic/global,
+      https://vanessa.com/online/summit/licensed
     ],
     Properties: {
-      property1: True
+      property1: True,
+      property2: False,
+      property3: null,
+      property7: value
     },
-    RedirectUris: [],
+    RedirectUris: [
+      https://taya.name/rustic-fresh-fish
+    ],
     Requirements: [],
-    Type: confidential
+    Type: public
   },
   database: {
     openiddict_applications: [
       {
-        _id: dcae0aa3aa263722b2c68775,
-        client_id: f3c7se6v0qk7eq27x5kaqa5gy12p4yhe,
-        client_secret: cchyaff8g9dgxwqy4kgdw5l5xw9rchr2,
+        _id: 9a6bf9f99171c79fefe6a1bf,
+        client_id: vxo6kyxqq2zonyyh0hja5l8dzaqd55hj,
+        client_secret: zft0vr0l7qdpivbx1de5jeuaob797jkk,
         concurrency_token: Guid_2,
-        consent_type: external,
-        display_name: Ergonomic Rubber Towels,
-        display_names: {
-          en: Sleek Wooden Shoes,
-          fr: Intelligent Soft Pants
-        },
+        consent_type: systematic,
+        display_name: Licensed Plastic Cheese,
+        display_names: {},
         permissions: [
           scope1,
-          scope3
+          scope2
         ],
         post_logout_redirect_uris: [
-          http://laney.com/turquoise/synergized,
-          http://daphney.biz/orchestrator/technician/harbors
+          http://christa.net/haven/paradigms/practical-wooden-ball
         ],
-        properties: {"property1":true,"property5":1.1,"property6":"","property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
-        redirect_uris: [
-          http://maximillian.com/deposit,
-          https://winston.org/human/checking-account
-        ],
-        requirements: [],
-        type: confidential
-      },
-      {
-        _id: 23a73613d62bf371f6a500e6,
-        client_id: 6tnv90jtjd9nz7sz7w69vvlubwx44fe4,
-        client_secret: 99afr7ztvb5lws2smo54unia7sjc2fo3,
-        concurrency_token: Guid_1,
-        consent_type: systematic,
-        display_name: Rustic Granite Table,
-        display_names: {
-          de: Intelligent Frozen Tuna,
-          en: Gorgeous Concrete Ball
-        },
-        permissions: [
-          scope2,
-          scope1
-        ],
-        post_logout_redirect_uris: [
-          http://lenny.org/executive,
-          https://winfield.org/automotive--outdoors/sharable/bond-markets-units-european-composite-unit-eurco
-        ],
-        properties: {"property1":true},
+        properties: {"property4":1,"property5":1.1},
         redirect_uris: [],
         requirements: [],
-        type: confidential
+        type: public
       },
       {
-        _id: 29ca3dd441acdad585dccae5,
-        client_id: mn7mqttvrfgh0brbtt1lgciqxjjdreoi,
-        client_secret: oe1jn7jg9rze6ba8kiyylbwa5hp6ag4d,
+        _id: b7f0e1aba265fd39fd726f33,
+        client_id: kxygj5ufvpa4ndd2ugg92mjhs9n9014q,
+        client_secret: 8qhz567hbxg8k2ymgeaxhy6xdhn9ilfu,
         concurrency_token: Guid_3,
-        consent_type: explicit,
-        display_name: Gorgeous Soft Bike,
+        consent_type: external,
+        display_name: Small Soft Soap,
         display_names: {
-          de: Fantastic Wooden Hat,
-          en: Practical Metal Salad
+          de: Generic Metal Hat,
+          en: Handmade Concrete Ball
         },
         permissions: [],
-        post_logout_redirect_uris: [
-          http://maegan.com/cfp-franc/next-generation
+        post_logout_redirect_uris: [],
+        properties: {"property1":true,"property3":null},
+        redirect_uris: [
+          https://donavon.name/sleek,
+          https://joana.biz/connecticut/wall/cambridgeshire
         ],
-        properties: {"property2":false,"property3":null,"property4":1,"property5":1.1,"property6":"","property7":"value"},
-        redirect_uris: [],
         requirements: [],
         type: confidential
+      },
+      {
+        _id: d10323e40007b0ad61f5b9c2,
+        client_id: 5dcevye5ac6rzqz65nhjsxo1ip6yn9s9,
+        client_secret: av1tvjf1lw6duxvo3t6349c7pbw6rfi0,
+        concurrency_token: Guid_1,
+        consent_type: systematic,
+        display_name: Sleek Fresh Pizza,
+        display_names: {
+          en: Ergonomic Metal Keyboard
+        },
+        permissions: [
+          scope3,
+          scope2
+        ],
+        post_logout_redirect_uris: [
+          https://marjory.org/plastic/global,
+          https://vanessa.com/online/summit/licensed
+        ],
+        properties: {"property1":true,"property2":false,"property3":null,"property7":"value"},
+        redirect_uris: [
+          https://taya.name/rustic-fresh-fish
+        ],
+        requirements: [],
+        type: public
       }
     ]
   }

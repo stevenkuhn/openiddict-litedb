@@ -47,5 +47,7 @@ public class TokenFaker : Faker<OpenIddictLiteDBToken>
                 }))
             .RuleFor(x => x.Subject, f => f.Person.UserName)
             .RuleFor(x => x.Type, f => f.PickRandom(new[] { TokenTypes.Bearer }));
+
+        UseSeed(84710);
     }
 }

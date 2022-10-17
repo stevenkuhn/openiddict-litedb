@@ -3,40 +3,45 @@
   database: {
     openiddict_authorizations: [
       {
-        _id: 93d08ee3cbecfe24549eeb62,
-        application_id: 1744f21c5c601a1d863eda6f,
+        _id: e3a858fdf41112cec96c8d63,
+        application_id: 19b13595713d27b51ab943fb,
         concurrency_token: Guid_1,
         creation_date: DateTime_1,
-        properties: {"property4":1},
-        scopes: [],
-        status: rejected,
-        subject: Carlos77,
+        properties: {"property2":false,"property3":null,"property6":"","property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
+        scopes: [
+          scope1,
+          scope3
+        ],
+        status: valid,
+        subject: Simon_Vandervort3,
         type: ad-hoc
       },
       {
-        _id: 975e292ee4c57c132d042e7b,
-        application_id: 5d7eb8041987272c5062aef8,
+        _id: 2afb9dc61d1f858b5d2ba22b,
+        application_id: 305d60cf08c5cec5ada6ff9e,
         concurrency_token: Guid_2,
         creation_date: DateTime_2,
-        properties: {"property3":null,"property4":1,"property7":"value","property9":{"key":"value"}},
-        scopes: [],
-        status: revoked,
-        subject: Eleanor54,
-        type: permanent
+        properties: {},
+        scopes: [
+          scope1,
+          scope3
+        ],
+        status: inactive,
+        subject: Delores.Bogan81,
+        type: ad-hoc
       },
       {
-        _id: 23a73613d62bf371f6a500e6,
-        application_id: 2cad408d854af3cf3e24ed9d,
+        _id: 3c6ca4037fc3397345f79aa6,
+        application_id: 1ed12557884ae8e8cdceb297,
         concurrency_token: Guid_3,
         creation_date: DateTime_3,
-        properties: {"property2":false,"property6":""},
+        properties: {"property1":true,"property7":"value"},
         scopes: [
-          scope3,
-          scope2
+          scope3
         ],
-        status: revoked,
-        subject: Kayla85,
-        type: permanent
+        status: redeemed,
+        subject: Gina_Klein90,
+        type: ad-hoc
       }
     ]
   }

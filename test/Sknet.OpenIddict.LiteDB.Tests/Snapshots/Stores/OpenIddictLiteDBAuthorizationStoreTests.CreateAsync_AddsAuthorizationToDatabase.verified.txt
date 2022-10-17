@@ -2,18 +2,15 @@
   database: {
     openiddict_authorizations: [
       {
-        _id: 23a73613d62bf371f6a500e6,
-        application_id: 2cad408d854af3cf3e24ed9d,
+        _id: d10323e40007b0ad61f5b9c2,
+        application_id: 2656df62452cfbf22a78cfa0,
         concurrency_token: Guid_1,
         creation_date: DateTime_1,
-        properties: {"property2":false,"property6":""},
-        scopes: [
-          scope3,
-          scope2
-        ],
-        status: revoked,
-        subject: Kayla85,
-        type: permanent
+        properties: {"property1":true,"property2":false,"property3":null,"property4":1,"property5":1.1,"property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
+        scopes: [],
+        status: inactive,
+        subject: Don70,
+        type: ad-hoc
       }
     ]
   }

@@ -66,5 +66,7 @@ public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
                 .ToImmutableArray())
             .RuleFor(x => x.Requirements, f => ImmutableArray.Create<string>())
             .RuleFor(x => x.Type, f => f.PickRandom(new[] { ClientTypes.Confidential, ClientTypes.Public }));
+
+        UseSeed(39571);
     }
 }

@@ -92,7 +92,7 @@ public class OpenIddictLiteDBApplicationStoreTests
         // Arrange
         var database = new DatabaseBuilder().Build();
         var store = new ApplicationStoreBuilder(database).Build();
-        var application = new ApplicationFaker().Generate();
+        var application = new ApplicationFaker().UseSeed(3484).Generate();
 
         // Act
         await store.CreateAsync(application, default);
@@ -118,7 +118,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task DeleteAsync_RemovesApplicationFromDatabase()
     {
         // Arrange
-        var application = new ApplicationFaker().Generate();
+        var application = new ApplicationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithApplications(2)
             .WithApplication(application)
@@ -138,7 +138,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task DeleteAsync_WithConcurrencyTokenChange_ThrowsException()
     {
         // Arrange
-        var application = new ApplicationFaker().Generate();
+        var application = new ApplicationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithApplication(application)
             .Build();
@@ -158,7 +158,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task DeleteAsync_RemovesAuthorizationsAndTokensFromDatabase()
     {
         // Arrange
-        var application = new ApplicationFaker().Generate();
+        var application = new ApplicationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithApplication(application, 
                 includeAuthorizations: true, 
@@ -196,7 +196,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task FindByClientIdAsync_WithIdentifier_ReturnsApplication()
     {
         // Arrange
-        var application = new ApplicationFaker().Generate();
+        var application = new ApplicationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithApplication()
             .WithApplication(application)
@@ -228,7 +228,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task FindByIdAsyncAsync_WithIdentifier_ReturnsApplication()
     {
         // Arrange
-        var application = new ApplicationFaker().Generate();
+        var application = new ApplicationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithApplication()
             .WithApplication(application)
@@ -260,7 +260,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task FindByPostLogoutRedirectUriAsync_WithAddress_ReturnsApplication()
     {
         // Arrange
-        var application = new ApplicationFaker()
+        var application = new ApplicationFaker().UseSeed(3484)
             .RuleFor(x => x.PostLogoutRedirectUris, new[] { "https://www.fabrikam.com/path1" }.ToImmutableArray())
             .Generate();
         var database = new DatabaseBuilder()
@@ -294,7 +294,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task FindByRedirectUriAsync_WithAddress_ReturnsApplication()
     {
         // Arrange
-        var application = new ApplicationFaker()
+        var application = new ApplicationFaker().UseSeed(3484)
             .RuleFor(x => x.RedirectUris, new[] { "https://www.fabrikam.com/path1" }.ToImmutableArray())
             .Generate();
         var database = new DatabaseBuilder()
@@ -330,7 +330,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task GetAsync_WithQuery_ReturnsAppropriateResult()
     {
         // Arrange
-        var application = new ApplicationFaker().Generate();
+        var application = new ApplicationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithApplication()
             .WithApplication(application)
@@ -399,8 +399,8 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task ListAsync_WithQuery_ReturnsAppropriateResult()
     {
         // Arrange
-        var application1 = new ApplicationFaker().Generate();
-        var application2 = new ApplicationFaker().Generate();
+        var application1 = new ApplicationFaker().UseSeed(3484).Generate();
+        var application2 = new ApplicationFaker().UseSeed(34384).Generate();
         var database = new DatabaseBuilder()
             .WithApplication()
             .WithApplication(application1)
@@ -435,7 +435,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task UpdateAsync_WithApplication_UpdatesAppropriateApplication()
     {
         // Arrange
-        var application = new ApplicationFaker().Generate();
+        var application = new ApplicationFaker().UseSeed(3484).Generate();
         var database = new DatabaseBuilder()
             .WithApplication(application)
             .Build();

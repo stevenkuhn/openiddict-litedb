@@ -49,5 +49,7 @@ public class AuthorizationFaker : Faker<OpenIddictLiteDBAuthorization>
                 }))
             .RuleFor(x => x.Subject, f => f.Person.UserName)
             .RuleFor(x => x.Type, f => f.PickRandom(new[] { AuthorizationTypes.AdHoc, AuthorizationTypes.Permanent }));
+
+        UseSeed(9474);
     }
 }
