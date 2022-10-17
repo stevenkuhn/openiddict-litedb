@@ -100,6 +100,23 @@ public class DatabaseBuilder
         return this;
     }
 
+    public DatabaseBuilder WithAuthorization()
+    {
+        return WithAuthorizations(1);
+    }
+
+    public DatabaseBuilder WithAuthorization(OpenIddictLiteDBAuthorization authorization)
+    {
+        _authorizations.Add(authorization);
+        return this;
+    }
+
+    public DatabaseBuilder WithAuthorizations(int count)
+    {
+        _authorizations.AddRange(_authorizationFaker.Generate(count));
+        return this;
+    }
+    
     public ILiteDatabase Build()
     {
         var database = new OpenIddictLiteDatabase(":memory:");

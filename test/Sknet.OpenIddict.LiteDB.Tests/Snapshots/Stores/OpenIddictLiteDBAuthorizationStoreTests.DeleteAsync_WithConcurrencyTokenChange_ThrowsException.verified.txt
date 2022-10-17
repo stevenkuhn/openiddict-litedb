@@ -1,0 +1,23 @@
+﻿{
+  target:
+The authorization was concurrently updated and cannot be persisted in its current state.
+Reload the authorization from the database and retry the operation.,
+  database: {
+    openiddict_authorizations: [
+      {
+        _id: 23a73613d62bf371f6a500e6,
+        application_id: 2cad408d854af3cf3e24ed9d,
+        concurrency_token: Guid_1,
+        creation_date: DateTime_1,
+        properties: {"property2":false,"property6":""},
+        scopes: [
+          scope3,
+          scope2
+        ],
+        status: revoked,
+        subject: Kayla85,
+        type: permanent
+      }
+    ]
+  }
+}

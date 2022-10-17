@@ -20,6 +20,7 @@ public class AuthorizationFaker : Faker<OpenIddictLiteDBAuthorization>
     public AuthorizationFaker()
     {
         RuleFor(x => x.Id, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
+            .RuleFor(x => x.ApplicationId, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
             .RuleFor(x => x.ConcurrencyToken, f => f.Random.Guid().ToString())
             .RuleFor(x => x.CreationDate, f => f.Date.Past())
             .RuleFor(x => x.Properties, f => f.Random.ListItems<(string PropertyName, JsonElement JsonValue)>(new()

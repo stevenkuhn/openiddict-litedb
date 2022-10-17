@@ -64,11 +64,7 @@ public class OpenIddictLiteDBApplicationStore<TApplication> : IOpenIddictApplica
         var database = await Context.GetDatabaseAsync(cancellationToken);
         var collection = database.GetCollection<TApplication>(Options.CurrentValue.ApplicationsCollectionName);
 
-        var items = collection.FindAll();
-        var queryable = items.AsQueryable();
-        var result = query(queryable);
-
-        return result.LongCount();
+        return query(collection.FindAll().AsQueryable()).LongCount();
     }
 
     /// <inheritdoc/>
