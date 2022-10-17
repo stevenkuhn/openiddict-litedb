@@ -417,4 +417,36 @@ public class OpenIddictLiteDBApplicationStoreTests
         // Assert
         var verify = await Verify(result, database);
     }
+
+    [Fact]
+    public async Task UpdateAsync_WithNullApplication_ThrowsException()
+    {
+        // Arrange
+        var database = new DatabaseBuilder().Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act/Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(
+            "application",
+            () => store.UpdateAsync(null!, default).AsTask());
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithApplication_UpdatesAppropriateApplication()
+    {
+        // Arrange
+        var application = new ApplicationFaker().Generate();
+        var database = new DatabaseBuilder()
+            .WithApplication(application)
+            .Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        application.DisplayName = "My Fabrikam";
+
+        // Act
+        await store.UpdateAsync(application, default);
+
+        // Assert
+        await Verify(database);
+    }
 }
