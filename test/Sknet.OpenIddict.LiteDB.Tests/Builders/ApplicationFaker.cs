@@ -36,7 +36,13 @@ public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
                 .ToImmutableDictionary(x => x.Culture, x => x.DisplayName))
             .RuleFor(x => x.Permissions, f => f.Random.ListItems<string>(new() { "scope1", "scope2", "scope3" })
                 .ToImmutableArray())
-            .RuleFor(x => x.PostLogoutRedirectUris, f => ImmutableArray.Create<string>())
+            .RuleFor(x => x.PostLogoutRedirectUris, f => f.Random.ListItems<string>(new()
+                {
+                    f.Internet.UrlWithPath(),
+                    f.Internet.UrlWithPath(),
+                    f.Internet.UrlWithPath()
+                })
+                .ToImmutableArray())
             .RuleFor(x => x.Properties, f => f.Random.ListItems<(string PropertyName, JsonElement JsonValue)>(new()
                 {
                     ("property1", JsonDocument.Parse("true").RootElement),
@@ -51,7 +57,13 @@ public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
                 })
                 .OrderBy(x => x.PropertyName)
                 .ToImmutableDictionary(x => x.PropertyName, x => x.JsonValue))
-            .RuleFor(x => x.RedirectUris, f => ImmutableArray.Create<string>())
+            .RuleFor(x => x.RedirectUris, f => f.Random.ListItems<string>(new()
+                {
+                    f.Internet.UrlWithPath(),
+                    f.Internet.UrlWithPath(),
+                    f.Internet.UrlWithPath()
+                })
+                .ToImmutableArray())
             .RuleFor(x => x.Requirements, f => ImmutableArray.Create<string>())
             .RuleFor(x => x.Type, f => f.PickRandom(new[] { ClientTypes.Confidential, ClientTypes.Public }));
     }

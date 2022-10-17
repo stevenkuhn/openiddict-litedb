@@ -1,5 +1,5 @@
 ﻿{
-  target: 3,
+  target: Rustic Granite Table,
   database: {
     openiddict_applications: [
       {

@@ -1,5 +1,5 @@
 ﻿{
-  target: 3,
+  target: 1,
   database: {
     openiddict_applications: [
       {
@@ -55,20 +55,22 @@
       },
       {
         _id: 29ca3dd441acdad585dccae5,
-        client_id: mn7mqttvrfgh0brbtt1lgciqxjjdreoi,
-        client_secret: oe1jn7jg9rze6ba8kiyylbwa5hp6ag4d,
+        client_id: client-id-test,
+        client_secret: mn7mqttvrfgh0brbtt1lgciqxjjdreoi,
         concurrency_token: Guid_3,
-        consent_type: explicit,
-        display_name: Gorgeous Soft Bike,
+        consent_type: implicit,
+        display_name: Sleek Frozen Sausages,
         display_names: {
-          de: Fantastic Wooden Hat,
-          en: Practical Metal Salad
+          en: Generic Plastic Salad,
+          es: Practical Wooden Pants,
+          fr: Gorgeous Wooden Shoes
         },
         permissions: [],
         post_logout_redirect_uris: [
-          http://maegan.com/cfp-franc/next-generation
+          https://dasia.info/leading-edge/new-mexico/focused,
+          https://everett.com/regional/saint-barthelemy/initiatives
         ],
-        properties: {"property2":false,"property3":null,"property4":1,"property5":1.1,"property6":"","property7":"value"},
+        properties: {"property2":false,"property3":null,"property6":"","property7":"value","property9":{"key":"value"}},
         redirect_uris: [],
         requirements: [],
         type: confidential

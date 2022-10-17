@@ -19,11 +19,14 @@ Reload the application from the database and retry the operation.,
           scope2,
           scope1
         ],
-        post_logout_redirect_uris: [],
-        properties: {"property1":true,"property2":false,"property3":null,"property4":1,"property5":1.1,"property7":"value","property9":{"key":"value"}},
+        post_logout_redirect_uris: [
+          http://lenny.org/executive,
+          https://winfield.org/automotive--outdoors/sharable/bond-markets-units-european-composite-unit-eurco
+        ],
+        properties: {"property1":true},
         redirect_uris: [],
         requirements: [],
-        type: public
+        type: confidential
       }
     ]
   }

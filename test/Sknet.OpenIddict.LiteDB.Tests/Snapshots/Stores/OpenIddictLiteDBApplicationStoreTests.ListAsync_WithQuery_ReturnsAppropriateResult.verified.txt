@@ -1,5 +1,8 @@
 ﻿{
-  target: 3,
+  target: [
+    Ergonomic Rubber Towels,
+    Rustic Granite Table
+  ],
   database: {
     openiddict_applications: [
       {

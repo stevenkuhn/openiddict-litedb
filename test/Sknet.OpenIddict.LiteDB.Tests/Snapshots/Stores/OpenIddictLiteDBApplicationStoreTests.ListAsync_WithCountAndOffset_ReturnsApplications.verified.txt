@@ -1,5 +1,40 @@
 ﻿{
-  target: 3,
+  target: [
+    {
+      ClientId: f3c7se6v0qk7eq27x5kaqa5gy12p4yhe,
+      ClientSecret: cchyaff8g9dgxwqy4kgdw5l5xw9rchr2,
+      ConcurrencyToken: Guid_1,
+      ConsentType: external,
+      DisplayName: Ergonomic Rubber Towels,
+      DisplayNames: {
+        en: Sleek Wooden Shoes,
+        fr: Intelligent Soft Pants
+      },
+      Id: dcae0aa3aa263722b2c68775,
+      Permissions: [
+        scope1,
+        scope3
+      ],
+      PostLogoutRedirectUris: [
+        http://laney.com/turquoise/synergized,
+        http://daphney.biz/orchestrator/technician/harbors
+      ],
+      Properties: {
+        property1: True,
+        property5: 1.1,
+        property6: ,
+        property7: value,
+        property8: ["value1","value2"],
+        property9: {"key":"value"}
+      },
+      RedirectUris: [
+        http://maximillian.com/deposit,
+        https://winston.org/human/checking-account
+      ],
+      Requirements: [],
+      Type: confidential
+    }
+  ],
   database: {
     openiddict_applications: [
       {

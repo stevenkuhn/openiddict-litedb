@@ -1,0 +1,102 @@
+﻿{
+  target: [
+    {
+      ClientId: 6tnv90jtjd9nz7sz7w69vvlubwx44fe4,
+      ClientSecret: 99afr7ztvb5lws2smo54unia7sjc2fo3,
+      ConcurrencyToken: Guid_1,
+      ConsentType: systematic,
+      DisplayName: Rustic Granite Table,
+      DisplayNames: {
+        de: Intelligent Frozen Tuna,
+        en: Gorgeous Concrete Ball
+      },
+      Id: 23a73613d62bf371f6a500e6,
+      Permissions: [
+        scope2,
+        scope1
+      ],
+      PostLogoutRedirectUris: [
+        http://lenny.org/executive,
+        https://winfield.org/automotive--outdoors/sharable/bond-markets-units-european-composite-unit-eurco
+      ],
+      Properties: {
+        property1: True
+      },
+      RedirectUris: [
+        https://www.fabrikam.com/path1
+      ],
+      Requirements: [],
+      Type: confidential
+    }
+  ],
+  database: {
+    openiddict_applications: [
+      {
+        _id: 18406df97b0969e87eda1cff,
+        client_id: 7n3bp33cerv3ol5g6lrn7vu993nrtntb,
+        client_secret: kburrnxdmn7mqttvrfgh0brbtt1lgciq,
+        concurrency_token: Guid_2,
+        consent_type: external,
+        display_name: Licensed Frozen Shirt,
+        display_names: {},
+        permissions: [
+          scope3
+        ],
+        post_logout_redirect_uris: [
+          https://dasia.info/leading-edge/new-mexico/focused,
+          http://laron.info/bluetooth/conglomeration/payment
+        ],
+        properties: {"property1":true,"property4":1,"property5":1.1,"property7":"value"},
+        redirect_uris: [
+          https://abigale.name/security,
+          https://clemmie.org/copying/deposit
+        ],
+        requirements: [],
+        type: confidential
+      },
+      {
+        _id: 23a73613d62bf371f6a500e6,
+        client_id: 6tnv90jtjd9nz7sz7w69vvlubwx44fe4,
+        client_secret: 99afr7ztvb5lws2smo54unia7sjc2fo3,
+        concurrency_token: Guid_1,
+        consent_type: systematic,
+        display_name: Rustic Granite Table,
+        display_names: {
+          de: Intelligent Frozen Tuna,
+          en: Gorgeous Concrete Ball
+        },
+        permissions: [
+          scope2,
+          scope1
+        ],
+        post_logout_redirect_uris: [
+          http://lenny.org/executive,
+          https://winfield.org/automotive--outdoors/sharable/bond-markets-units-european-composite-unit-eurco
+        ],
+        properties: {"property1":true},
+        redirect_uris: [
+          https://www.fabrikam.com/path1
+        ],
+        requirements: [],
+        type: confidential
+      },
+      {
+        _id: 44f21c5c601a1d863eda6f13,
+        client_id: rwwb1vtow1mm8nm4e7h45p6rdjhgbf3c,
+        client_secret: 7se6v0qk7eq27x5kaqa5gy12p4yhecch,
+        concurrency_token: Guid_3,
+        consent_type: external,
+        display_name: Unbranded Wooden Soap,
+        display_names: {},
+        permissions: [],
+        post_logout_redirect_uris: [
+          https://erin.org/central
+        ],
+        properties: {"property1":true,"property2":false,"property3":null,"property5":1.1,"property6":"","property9":{"key":"value"}},
+        redirect_uris: [],
+        requirements: [],
+        type: public
+      }
+    ]
+  }
+}
