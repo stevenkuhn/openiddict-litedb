@@ -48,6 +48,9 @@ public class VerifyTestFramework : XunitTestFramework
             {
                 var converters = _.Converters;
                 converters.Add(new LiteDatabaseConverter());
-            });
+                converters.Add(new ObjectIdConverter());
+                converters.Add(new DisplayNamesConverter());
+                converters.Add(new PropertiesConverter());
+            });                                                                           
     }
 }

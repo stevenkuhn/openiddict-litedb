@@ -18,12 +18,15 @@ namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 public class DatabaseBuilder
 {
     private readonly List<OpenIddictLiteDBApplication> _applications = new();
+    private readonly List<OpenIddictLiteDBAuthorization> _authorizations = new();
+    private readonly List<OpenIddictLiteDBToken> _tokens = new();
     private readonly ApplicationFaker _applicationFaker = new();
+    private readonly AuthorizationFaker _authorizationFaker = new();
+    private readonly TokenFaker _tokenFaker = new();
 
-    public DatabaseBuilder WithApplications(int count)
+    public DatabaseBuilder WithApplication()
     {
-        _applications.AddRange(_applicationFaker.Generate(count));
-        return this;
+        return WithApplications(1);
     }
 
     public DatabaseBuilder WithApplication(string clientId)
@@ -34,9 +37,66 @@ public class DatabaseBuilder
         return this;
     }
 
-    public DatabaseBuilder WithApplication(OpenIddictLiteDBApplication application)
+    public DatabaseBuilder WithApplication(
+        OpenIddictLiteDBApplication application,
+        bool includeAuthorizations = false,
+        bool includeTokens = false)
     {
         _applications.Add(application);
+
+        if (includeAuthorizations)
+        {
+            var authorizations = _authorizationFaker
+                .RuleFor(x => x.ApplicationId, application.Id)
+                .Generate(2);
+
+            if (includeTokens)
+            {
+                foreach (var authorization in authorizations)
+                {
+                    _tokens.AddRange(_tokenFaker
+                        .RuleFor(x => x.ApplicationId, application.Id)
+                        .RuleFor(x => x.AuthorizationId, authorization.Id)
+                        .Generate(2));
+                }
+            }
+
+            _authorizations.AddRange(authorizations);
+        }
+
+        return this;
+    }
+
+    public DatabaseBuilder WithApplications(int count,
+        bool includeAuthorizations = false,
+        bool includeTokens = false)
+    {
+        var applications = _applicationFaker.Generate(count);
+
+        if (includeAuthorizations)
+        {
+            foreach (var application in applications)
+            {
+                var authorizations = _authorizationFaker
+                    .RuleFor(x => x.ApplicationId, application.Id)
+                    .Generate(2);
+
+                if (includeTokens)
+                {
+                    foreach (var authorization in authorizations)
+                    {
+                        _tokens.AddRange(_tokenFaker
+                            .RuleFor(x => x.ApplicationId, application.Id)
+                            .RuleFor(x => x.AuthorizationId, authorization.Id)
+                            .Generate(2));
+                    }
+                }
+
+                _authorizations.AddRange(authorizations);
+            }
+        }
+
+        _applications.AddRange(applications);
         return this;
     }
 
@@ -45,9 +105,26 @@ public class DatabaseBuilder
         var database = new OpenIddictLiteDatabase(":memory:");
         var options = new OpenIddictLiteDBOptions();
 
-        database
-            .GetCollection<OpenIddictLiteDBApplication>(options.ApplicationsCollectionName)
-            .InsertBulk(_applications);
+        if (_applications.Count > 0)
+        {
+            database
+                .GetCollection<OpenIddictLiteDBApplication>(options.ApplicationsCollectionName)
+                .InsertBulk(_applications);
+        }
+
+        if (_authorizations.Count > 0)
+        {
+            database
+                .GetCollection<OpenIddictLiteDBAuthorization>(options.AuthorizationsCollectionName)
+                .InsertBulk(_authorizations);
+        }
+
+        if (_tokens.Count > 0)
+        {
+            database
+                .GetCollection<OpenIddictLiteDBToken>(options.TokensCollectionName)
+                .InsertBulk(_tokens);
+        }
 
         return database;
     }

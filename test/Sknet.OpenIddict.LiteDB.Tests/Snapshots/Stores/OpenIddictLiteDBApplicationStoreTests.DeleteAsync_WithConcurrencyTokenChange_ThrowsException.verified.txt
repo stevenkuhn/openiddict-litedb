@@ -1,0 +1,30 @@
+﻿{
+  target:
+The application was concurrently updated and cannot be persisted in its current state.
+Reload the application from the database and retry the operation.,
+  database: {
+    openiddict_applications: [
+      {
+        _id: 23a73613d62bf371f6a500e6,
+        client_id: 6tnv90jtjd9nz7sz7w69vvlubwx44fe4,
+        client_secret: 99afr7ztvb5lws2smo54unia7sjc2fo3,
+        concurrency_token: Guid_1,
+        consent_type: systematic,
+        display_name: Rustic Granite Table,
+        display_names: {
+          de: Intelligent Frozen Tuna,
+          en: Gorgeous Concrete Ball
+        },
+        permissions: [
+          scope2,
+          scope1
+        ],
+        post_logout_redirect_uris: [],
+        properties: {"property1":true,"property2":false,"property3":null,"property4":1,"property5":1.1,"property7":"value","property9":{"key":"value"}},
+        redirect_uris: [],
+        requirements: [],
+        type: public
+      }
+    ]
+  }
+}

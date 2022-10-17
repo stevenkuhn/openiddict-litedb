@@ -1,0 +1,196 @@
+﻿{
+  database: {
+    openiddict_applications: [
+      {
+        _id: 9b28ea22c33ea71447ab9b23,
+        client_id: pjhisrm6rjlefkip2h9kjp8qrjbgn8cv,
+        client_secret: kxtc5md1l253uptqzxn2flpzaqq9f6ii,
+        concurrency_token: Guid_1,
+        consent_type: implicit,
+        display_name: Awesome Granite Fish,
+        display_names: {
+          de: Ergonomic Cotton Salad,
+          es: Ergonomic Rubber Shirt
+        },
+        permissions: [],
+        post_logout_redirect_uris: [],
+        properties: {"property2":false,"property3":null,"property4":1,"property6":"","property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
+        redirect_uris: [],
+        requirements: [],
+        type: public
+      },
+      {
+        _id: 362da8dbcee4d4e128099ff4,
+        client_id: r6dkmcdc7c0exj7kqoppyv122q6own19,
+        client_secret: hu3i6a3gjl2h8i5mcguw87bw4biv5pfj,
+        concurrency_token: Guid_2,
+        consent_type: implicit,
+        display_name: Awesome Plastic Table,
+        display_names: {},
+        permissions: [
+          scope1
+        ],
+        post_logout_redirect_uris: [],
+        properties: {"property2":false,"property4":1,"property6":"","property7":"value"},
+        redirect_uris: [],
+        requirements: [],
+        type: confidential
+      }
+    ],
+    openiddict_authorizations: [
+      {
+        _id: 817a74d796eafcc74521abf4,
+        application_id: 362da8dbcee4d4e128099ff4,
+        concurrency_token: Guid_3,
+        creation_date: DateTime_1,
+        properties: {"property1":true,"property2":false,"property3":null,"property4":1,"property5":1.1,"property6":"","property7":"value","property8":["value1","value2"]},
+        scopes: [
+          scope3,
+          scope2
+        ],
+        status: revoked,
+        subject: Nichole15,
+        type: permanent
+      },
+      {
+        _id: e7fdbc5ad59276b020e163b6,
+        application_id: 362da8dbcee4d4e128099ff4,
+        concurrency_token: Guid_4,
+        creation_date: DateTime_2,
+        properties: {"property1":true,"property3":null,"property5":1.1,"property6":"","property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
+        scopes: [
+          scope3,
+          scope1
+        ],
+        status: redeemed,
+        subject: Geneva_Prohaska53,
+        type: ad-hoc
+      },
+      {
+        _id: 5d90ba6b978e2eee14b350b6,
+        application_id: 9b28ea22c33ea71447ab9b23,
+        concurrency_token: Guid_5,
+        creation_date: DateTime_3,
+        properties: {"property1":true,"property2":false,"property3":null,"property4":1,"property5":1.1,"property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
+        scopes: [
+          scope1,
+          scope2
+        ],
+        status: rejected,
+        subject: Lloyd51,
+        type: permanent
+      },
+      {
+        _id: 64f0f197f496fb2ba8448a6f,
+        application_id: 9b28ea22c33ea71447ab9b23,
+        concurrency_token: Guid_6,
+        creation_date: DateTime_4,
+        properties: {"property7":"value","property8":["value1","value2"],"property9":{"key":"value"}},
+        scopes: [
+          scope1
+        ],
+        status: revoked,
+        subject: Cedric_Weimann,
+        type: permanent
+      }
+    ],
+    openiddict_tokens: [
+      {
+        _id: a1aedca67c18ea90675d47fa,
+        application_id: 9b28ea22c33ea71447ab9b23,
+        authorization_id: 64f0f197f496fb2ba8448a6f,
+        concurrency_token: Guid_7,
+        creation_date: DateTime_5,
+        expiration_date: DateTime_6,
+        properties: {"property1":true,"property4":1,"property9":{"key":"value"}},
+        status: redeemed,
+        subject: Felix89,
+        type: Bearer
+      },
+      {
+        _id: 123ecd4217dce58bd08fd740,
+        application_id: 9b28ea22c33ea71447ab9b23,
+        authorization_id: 5d90ba6b978e2eee14b350b6,
+        concurrency_token: Guid_8,
+        creation_date: DateTime_7,
+        expiration_date: DateTime_8,
+        properties: {"property1":true,"property2":false,"property3":null,"property4":1,"property5":1.1,"property6":"","property8":["value1","value2"],"property9":{"key":"value"}},
+        status: redeemed,
+        subject: Josefina_Moore,
+        type: Bearer
+      },
+      {
+        _id: 22d1a4b4d207a5742c1dd5fc,
+        application_id: 362da8dbcee4d4e128099ff4,
+        authorization_id: 817a74d796eafcc74521abf4,
+        concurrency_token: Guid_9,
+        creation_date: DateTime_9,
+        expiration_date: DateTime_10,
+        properties: {"property3":null,"property5":1.1,"property6":"","property9":{"key":"value"}},
+        status: inactive,
+        subject: Kendra.Rolfson,
+        type: Bearer
+      },
+      {
+        _id: 2867f8934725a34796033cae,
+        application_id: 362da8dbcee4d4e128099ff4,
+        authorization_id: 817a74d796eafcc74521abf4,
+        concurrency_token: Guid_10,
+        creation_date: DateTime_11,
+        expiration_date: DateTime_12,
+        properties: {"property1":true,"property6":"","property7":"value","property9":{"key":"value"}},
+        status: inactive,
+        subject: June15,
+        type: Bearer
+      },
+      {
+        _id: 616d4fa745ec1149c718b74a,
+        application_id: 362da8dbcee4d4e128099ff4,
+        authorization_id: e7fdbc5ad59276b020e163b6,
+        concurrency_token: Guid_11,
+        creation_date: DateTime_13,
+        expiration_date: DateTime_14,
+        properties: {"property2":false,"property3":null,"property4":1,"property5":1.1,"property6":"","property8":["value1","value2"],"property9":{"key":"value"}},
+        status: revoked,
+        subject: Nathan_Corkery,
+        type: Bearer
+      },
+      {
+        _id: 61abe96ae560151adb298bd7,
+        application_id: 9b28ea22c33ea71447ab9b23,
+        authorization_id: 5d90ba6b978e2eee14b350b6,
+        concurrency_token: Guid_12,
+        creation_date: DateTime_15,
+        expiration_date: DateTime_16,
+        properties: {"property7":"value"},
+        status: rejected,
+        subject: Dana.Balistreri98,
+        type: Bearer
+      },
+      {
+        _id: 62ec9efcd25c7e890e97db13,
+        application_id: 362da8dbcee4d4e128099ff4,
+        authorization_id: e7fdbc5ad59276b020e163b6,
+        concurrency_token: Guid_13,
+        creation_date: DateTime_17,
+        expiration_date: DateTime_18,
+        properties: {"property3":null,"property5":1.1,"property7":"value","property8":["value1","value2"]},
+        status: revoked,
+        subject: Tony_Pollich,
+        type: Bearer
+      },
+      {
+        _id: 6a85a862e396031fc90e769a,
+        application_id: 9b28ea22c33ea71447ab9b23,
+        authorization_id: 64f0f197f496fb2ba8448a6f,
+        concurrency_token: Guid_14,
+        creation_date: DateTime_19,
+        expiration_date: DateTime_20,
+        properties: {"property2":false,"property4":1,"property5":1.1,"property7":"value"},
+        status: revoked,
+        subject: Rosalie10,
+        type: Bearer
+      }
+    ]
+  }
+}

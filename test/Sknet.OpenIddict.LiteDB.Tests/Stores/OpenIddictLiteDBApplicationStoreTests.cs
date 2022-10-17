@@ -134,7 +134,112 @@ public class OpenIddictLiteDBApplicationStoreTests
         Assert.DoesNotContain($"client_id: {application.ClientId}", result.Text);
     }
 
-    // DeleteAsync with Concurrency issue
-    // DeleteAsync - Deletes authorizations
-    // DeleteAsync - Deletes tokens
+    [Fact]
+    public async Task DeleteAsync_WithConcurrencyTokenChange_ThrowsException()
+    {
+        // Arrange
+        var application = new ApplicationFaker().Generate();
+        var database = new DatabaseBuilder()
+            .WithApplication(application)
+            .Build();
+
+        var store = new ApplicationStoreBuilder(database).Build();
+        application.ConcurrencyToken = Guid.NewGuid().ToString();
+
+        // Act
+        var exception = await Assert.ThrowsAsync<OpenIddictExceptions.ConcurrencyException>(
+            () => store.DeleteAsync(application, default).AsTask());
+
+        // Assert
+        await Verify(exception.Message, database);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesAuthorizationsAndTokensFromDatabase()
+    {
+        // Arrange
+        var application = new ApplicationFaker().Generate();
+        var database = new DatabaseBuilder()
+            .WithApplication(application, 
+                includeAuthorizations: true, 
+                includeTokens: true)
+            .WithApplications(2, 
+                includeAuthorizations: true,
+                includeTokens: true)
+            .Build();
+
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act
+        await store.DeleteAsync(application, default);
+
+        // Assert
+        var result = await Verify(database);
+        Assert.DoesNotContain($"client_id: {application.ClientId}", result.Text);
+        Assert.DoesNotContain($"application_id: {application.Id}", result.Text);
+    }
+
+    [Fact]
+    public async Task FindByClientIdAsync_WithNullIdentifier_ThrowsException()
+    {
+        // Arrange
+        var database = new DatabaseBuilder().Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act/Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            "identifier",
+            () => store.FindByClientIdAsync(null!, default).AsTask());
+    }
+
+    [Fact]
+    public async Task FindByClientIdAsync_WithIdentifier_ReturnsApplication()
+    {
+        // Arrange
+        var application = new ApplicationFaker().Generate();
+        var database = new DatabaseBuilder()
+            .WithApplication()
+            .WithApplication(application)
+            .WithApplication()
+            .Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act
+        var result = await store.FindByClientIdAsync(application.ClientId!, default);
+
+        // Assert
+        await Verify(result, database);
+    }
+    
+    [Fact]
+    public async Task FindByIdAsync_WithNullIdentifier_ThrowsException()
+    {
+        // Arrange
+        var database = new DatabaseBuilder().Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act/Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            "identifier",
+            () => store.FindByIdAsync(null!, default).AsTask());
+    }
+
+    [Fact]
+    public async Task FindByIdAsyncAsync_WithIdentifier_ReturnsApplication()
+    {
+        // Arrange
+        var application = new ApplicationFaker().Generate();
+        var database = new DatabaseBuilder()
+            .WithApplication()
+            .WithApplication(application)
+            .WithApplication()
+            .Build();
+        var store = new ApplicationStoreBuilder(database).Build();
+
+        // Act
+        var result = await store.FindByIdAsync(application.Id.ToString(), default);
+
+        // Assert
+        await Verify(result, database);
+    }
 }
