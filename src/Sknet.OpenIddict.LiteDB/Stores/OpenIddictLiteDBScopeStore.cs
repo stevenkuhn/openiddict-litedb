@@ -111,7 +111,7 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         var database = await Context.GetDatabaseAsync(cancellationToken);
         var collection = database.GetCollection<TScope>(Options.CurrentValue.ScopesCollectionName);
 
-        return collection.FindById(identifier);
+        return collection.FindById(new ObjectId(identifier));
     }
 
     /// <inheritdoc/>

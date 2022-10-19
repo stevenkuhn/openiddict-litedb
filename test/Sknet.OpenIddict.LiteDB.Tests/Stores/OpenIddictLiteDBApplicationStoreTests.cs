@@ -236,7 +236,7 @@ public class OpenIddictLiteDBApplicationStoreTests
     }
 
     [Fact]
-    public async Task FindByIdAsyncAsync_WithIdentifier_ReturnsApplication()
+    public async Task FindByIdAsync_WithIdentifier_ReturnsApplication()
     {
         // Arrange
         var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);

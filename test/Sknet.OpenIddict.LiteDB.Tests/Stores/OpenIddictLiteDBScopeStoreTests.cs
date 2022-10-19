@@ -105,4 +105,81 @@ public class OpenIddictLiteDBScopeStoreTests
         var result = database.Scopes().FindById(scope.Id);
         Assert.NotNull(result);
     }
+
+    [Fact]
+    public async Task DeleteAsync_WithNullScope_ThrowsException()
+    {
+        // Arrange
+        var store = new OpenIddictLiteDBScopeStoreBuilder().Build();
+
+        // Act/Assert
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(
+            "scope",
+            () => store.DeleteAsync(null!, default).AsTask());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesScopeFromDatabase()
+    {
+        // Arrange
+        var scopes = new OpenIddictLiteDBScopeFaker().Generate(2);
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBScopeStoreBuilder()
+            .WithScopes(scopes)
+            .WithDatabase(database)
+            .Build();
+
+        // Act
+        await store.DeleteAsync(scopes[0], default);
+
+        // Assert
+        var result = database.Scopes().FindById(scopes[0].Id);
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WithConcurrencyTokenChange_ThrowsException()
+    {
+        // Arrange
+        var scope = new OpenIddictLiteDBScopeFaker().Generate();
+        var store = new OpenIddictLiteDBScopeStoreBuilder()
+            .WithScopes(scope)
+            .Build();
+
+        scope.ConcurrencyToken = Guid.NewGuid().ToString();
+
+        // Act/Assert
+        await Assert.ThrowsAsync<OpenIddictExceptions.ConcurrencyException>(
+            () => store.DeleteAsync(scope, default).AsTask());
+    }
+
+    [Fact]
+    public async Task FindByIdAsync_WithNullIdentifier_ThrowsException()
+    {
+        // Arrange
+        var store = new OpenIddictLiteDBScopeStoreBuilder().Build();
+
+        // Act/Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            "identifier",
+            () => store.FindByIdAsync(null!, default).AsTask());
+    }
+
+    [Fact]
+    public async Task FindByIdAsync_WithIdentifier_ReturnsScope()
+    {
+        // Arrange
+        var scopes = new OpenIddictLiteDBScopeFaker().Generate(3);
+        var store = new OpenIddictLiteDBScopeStoreBuilder()
+            .WithScopes(scopes)
+            .Build();
+
+        // Act
+        var result = await store.FindByIdAsync(scopes[1].Id.ToString(), default);
+
+        // Assert
+        Assert.Multiple(
+            () => Assert.NotNull(result),
+            () => Assert.Equal(scopes[1].Id, result!.Id));
+    }
 }

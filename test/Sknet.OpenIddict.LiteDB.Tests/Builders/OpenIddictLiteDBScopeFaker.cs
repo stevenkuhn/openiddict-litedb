@@ -22,7 +22,6 @@ public class OpenIddictLiteDBScopeFaker : Faker<OpenIddictLiteDBScope>
         UseSeed(1);
 
         RuleFor(x => x.Id, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
-
             .RuleFor(x => x.ConcurrencyToken, f => f.Random.Guid().ToString())
             .RuleFor(x => x.Description, f => f.Lorem.Sentence())
             .RuleFor(x => x.Descriptions, f => f.Random.ListItems<(CultureInfo Culture, string Description)>(new()
