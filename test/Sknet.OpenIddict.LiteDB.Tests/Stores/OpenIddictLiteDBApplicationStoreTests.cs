@@ -15,37 +15,43 @@
  */
 namespace Sknet.OpenIddict.LiteDB.Tests.Stores;
 
-[UsesVerify]
 public class OpenIddictLiteDBApplicationStoreTests
 {
-    public OpenIddictLiteDBApplicationStoreTests()
-    {
-        Randomizer.Seed = new Random(452856);
-    }
-
     [Fact]
-    public async Task CountAsync_ReturnsCorrespondingApplicationCount()
+    public async Task CountAsync_WithZeroItems_ReturnsZero()
     {
         // Arrange
-        var database = new DatabaseBuilder()
-            .WithApplications(3)
-            .Build();
-
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act
         var result = await store.CountAsync(default);
 
         // Assert
-        await Verify(result, database);
+        Assert.Equal(0, result);
+
+    }
+
+    [Fact]
+    public async Task CountAsync_WithThreeItems_ReturnsThree()
+    {
+        // Arrange
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
+            .Build();
+
+        // Act
+        var result = await store.CountAsync(default);
+
+        // Assert
+        Assert.Equal(3, result);
     }
 
     [Fact]
     public async Task CountAync_WithNullQuery_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act/Assert
         var exception = await Assert.ThrowsAsync<ArgumentNullException>(
@@ -54,31 +60,28 @@ public class OpenIddictLiteDBApplicationStoreTests
     }
 
     [Fact]
-    public async Task CountAsync_WithQuery_ReturnsCorrespondingApplicationCount()
+    public async Task CountAsync_WithQuery_ReturnsApplicationCount()
     {
         // Arrange
-        var database = new DatabaseBuilder()
-            .WithApplications(2)
-            .WithApplication("client-id-test")
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
             .Build();
-
-        var store = new ApplicationStoreBuilder(database).Build();
 
         // Act
         var result = await store.CountAsync(
-            query => query.Where(a => a.ClientId == "client-id-test"),
+            query => query.Where(a => a.ClientId == applications[1].ClientId),
             default);
 
         // Assert
-        await Verify(result, database);
+        Assert.Equal(1, result);
     }
 
     [Fact]
     public async Task CreateAsync_WithNullApplication_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act/Assert
         var exception = await Assert.ThrowsAsync<ArgumentNullException>(
@@ -90,23 +93,25 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task CreateAsync_AddsApplicationToDatabase()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
-        var application = new ApplicationFaker().UseSeed(3484).Generate();
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithDatabase(database)
+            .Build();
+        var application = new OpenIddictLiteDBApplicationFaker().Generate();
 
         // Act
         await store.CreateAsync(application, default);
 
         // Assert
-        await Verify(database);
+        var result = database.Applications().FindById(application.Id);
+        Assert.NotNull(result);
     }
 
     [Fact]
     public async Task DeleteAsync_WithNullApplication_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act/Assert
         var exception = await Assert.ThrowsAsync<ArgumentNullException>(
@@ -118,73 +123,81 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task DeleteAsync_RemovesApplicationFromDatabase()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484).Generate();
-        var database = new DatabaseBuilder()
-            .WithApplications(2)
-            .WithApplication(application)
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(2);
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
+            .WithDatabase(database)
             .Build();
-        
-        var store = new ApplicationStoreBuilder(database).Build();
 
         // Act
-        await store.DeleteAsync(application, default);
+        await store.DeleteAsync(applications[0], default);
 
         // Assert
-        var result = await Verify(database);
-        Assert.DoesNotContain($"client_id: {application.ClientId}", result.Text);
+        var result = database.Applications().FindById(applications[0].Id);
+        Assert.Null(result);
     }
 
     [Fact]
     public async Task DeleteAsync_WithConcurrencyTokenChange_ThrowsException()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484).Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication(application)
+        var application = new OpenIddictLiteDBApplicationFaker().Generate();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(application)
             .Build();
 
-        var store = new ApplicationStoreBuilder(database).Build();
         application.ConcurrencyToken = Guid.NewGuid().ToString();
 
-        // Act
-        var exception = await Assert.ThrowsAsync<OpenIddictExceptions.ConcurrencyException>(
+        // Act/Assert
+        await Assert.ThrowsAsync<OpenIddictExceptions.ConcurrencyException>(
             () => store.DeleteAsync(application, default).AsTask());
-
-        // Assert
-        await Verify(exception.Message, database);
     }
 
     [Fact]
     public async Task DeleteAsync_RemovesAuthorizationsAndTokensFromDatabase()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484).Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication(application, 
-                includeAuthorizations: true, 
-                includeTokens: true)
-            .WithApplications(2, 
-                includeAuthorizations: true,
-                includeTokens: true)
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(2);
+        var authorizations = new OpenIddictLiteDBAuthorizationFaker()
+            .RuleFor(x => x.ApplicationId, f => applications[f.IndexFaker % 2].Id)
+            .Generate(2);
+        var tokens = new OpenIddictLiteDBTokenFaker()
+            .RuleFor(x => x.ApplicationId, f => authorizations[f.IndexFaker % 2].ApplicationId)
+            .RuleFor(x => x.AuthorizationId, f => authorizations[f.IndexFaker % 2].Id)
+            .Generate(2);
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
+            .WithAuthorizations(authorizations)
+            .WithTokens(tokens)
+            .WithDatabase(database)
             .Build();
 
-        var store = new ApplicationStoreBuilder(database).Build();
+        // Assert
+        var applicationId = applications[0].Id;
+        var authorizationsResult = database.Authorizations().Find(x => x.ApplicationId == applicationId);
+        var tokensResult = database.Tokens().Find(x => x.ApplicationId == applicationId);
+        Assert.Multiple(
+            () => Assert.NotEmpty(authorizationsResult),
+            () => Assert.NotEmpty(tokensResult));
 
         // Act
-        await store.DeleteAsync(application, default);
+        await store.DeleteAsync(applications[0], default);
 
         // Assert
-        var result = await Verify(database);
-        Assert.DoesNotContain($"client_id: {application.ClientId}", result.Text);
-        Assert.DoesNotContain($"application_id: {application.Id}", result.Text);
+        authorizationsResult = database.Authorizations().Find(x => x.ApplicationId == applicationId);
+        tokensResult = database.Tokens().Find(x => x.ApplicationId == applicationId);
+        Assert.Multiple(
+            () => Assert.Empty(authorizationsResult),
+            () => Assert.Empty(tokensResult));
     }
 
     [Fact]
     public async Task FindByClientIdAsync_WithNullIdentifier_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act/Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(
@@ -196,27 +209,25 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task FindByClientIdAsync_WithIdentifier_ReturnsApplication()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484).Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication()
-            .WithApplication(application)
-            .WithApplication()
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
             .Build();
-        var store = new ApplicationStoreBuilder(database).Build();
 
         // Act
-        var result = await store.FindByClientIdAsync(application.ClientId!, default);
+        var result = await store.FindByClientIdAsync(applications[1].ClientId!, default);
 
         // Assert
-        await Verify(result, database);
+        Assert.Multiple(
+            () => Assert.NotNull(result),
+            () => Assert.Equal(applications[1].Id, result!.Id));
     }
-    
+
     [Fact]
     public async Task FindByIdAsync_WithNullIdentifier_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act/Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(
@@ -228,27 +239,25 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task FindByIdAsyncAsync_WithIdentifier_ReturnsApplication()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484).Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication()
-            .WithApplication(application)
-            .WithApplication()
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
             .Build();
-        var store = new ApplicationStoreBuilder(database).Build();
 
         // Act
-        var result = await store.FindByIdAsync(application.Id.ToString(), default);
+        var result = await store.FindByIdAsync(applications[1].Id.ToString(), default);
 
         // Assert
-        await Verify(result, database);
+        Assert.Multiple(
+            () => Assert.NotNull(result),
+            () => Assert.Equal(applications[1].Id, result!.Id));
     }
 
     [Fact]
     public async Task FindByPostLogoutRedirectUriAsync_WithNullAddress_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act/Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(
@@ -260,63 +269,63 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task FindByPostLogoutRedirectUriAsync_WithAddress_ReturnsApplication()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484)
-            .RuleFor(x => x.PostLogoutRedirectUris, new[] { "https://www.fabrikam.com/path1" }.ToImmutableArray())
-            .Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication()
-            .WithApplication(application)
-            .WithApplication()
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
             .Build();
-        var store = new ApplicationStoreBuilder(database).Build();
-
-        // Act
-        var result = await store.FindByPostLogoutRedirectUriAsync("https://www.fabrikam.com/path1", default).ToListAsync();
 
         // Assert
-        await Verify(result, database);
+        Assert.NotNull(applications[2].PostLogoutRedirectUris);
+        Assert.NotEmpty(applications[2].PostLogoutRedirectUris!);
+
+        // Act
+        var result = await store.FindByPostLogoutRedirectUriAsync(applications[2].PostLogoutRedirectUris!.Value[0], default).ToListAsync();
+
+        // Assert
+        Assert.Multiple(
+            () => Assert.NotNull(result),
+            () => Assert.Equal(applications[2].Id, result[0].Id));
     }
 
     [Fact]
     public async Task FindByRedirectUriAsync_WithNullAddress_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act/Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(
-            "address",
-            () => store.FindByRedirectUriAsync(null!, default).ToListAsync().AsTask());
+        "address",
+        () => store.FindByRedirectUriAsync(null!, default).ToListAsync().AsTask());
     }
 
     [Fact]
     public async Task FindByRedirectUriAsync_WithAddress_ReturnsApplication()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484)
-            .RuleFor(x => x.RedirectUris, new[] { "https://www.fabrikam.com/path1" }.ToImmutableArray())
-            .Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication()
-            .WithApplication(application)
-            .WithApplication()
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
             .Build();
-        var store = new ApplicationStoreBuilder(database).Build();
-
-        // Act
-        var result = await store.FindByRedirectUriAsync("https://www.fabrikam.com/path1", default).ToListAsync();
 
         // Assert
-        await Verify(result, database);
+        Assert.NotNull(applications[2].RedirectUris);
+        Assert.NotEmpty(applications[2].RedirectUris!);
+
+        // Act
+        var result = await store.FindByRedirectUriAsync(applications[2].RedirectUris!.Value[0], default).ToListAsync();
+
+        // Assert
+        Assert.Multiple(
+            () => Assert.NotNull(result),
+            () => Assert.Equal(applications[2].Id, result[0].Id));
     }
 
     [Fact]
     public async Task GetAsync_WithNullQuery_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         Func<IQueryable<object>, object, IQueryable<object>>? query = null;
 
@@ -330,30 +339,26 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task GetAsync_WithQuery_ReturnsAppropriateResult()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484).Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication()
-            .WithApplication(application)
-            .WithApplication()
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
             .Build();
-        var store = new ApplicationStoreBuilder(database).Build();
 
         var query = (IQueryable<OpenIddictLiteDBApplication> query, ObjectId state) =>
-            query.Where(x => x.Id == application.Id).Select(x => x.DisplayName);
+            query.Where(x => x.Id == state).Select(x => x.DisplayName);
 
         // Act
-        var result = await store.GetAsync(query, application.Id, default);
+        var result = await store.GetAsync(query, applications[1].Id, default);
 
         // Assert
-        await Verify(result, database);
+        Assert.Equal(applications[1].DisplayName, result);
     }
 
     [Fact]
     public async Task InstantiateAsync_ReturnsApplication()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act
         var result = await store.InstantiateAsync(default);
@@ -367,25 +372,25 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task ListAsync_WithCountAndOffset_ReturnsApplications()
     {
         // Arrange
-        var database = new DatabaseBuilder()
-            .WithApplications(3)
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
             .Build();
-
-        var store = new ApplicationStoreBuilder(database).Build();
 
         // Act
         var result = await store.ListAsync(1, 0, default).ToListAsync();
 
         // Assert
-        await Verify(result, database);
+        Assert.Multiple(
+            () => Assert.NotNull(result),
+            () => Assert.Single(result));
     }
 
     [Fact]
     public async Task ListAsync_WithNullQuery_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         Func<IQueryable<object>, object, IQueryable<object>>? query = null;
 
@@ -399,31 +404,29 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task ListAsync_WithQuery_ReturnsAppropriateResult()
     {
         // Arrange
-        var application1 = new ApplicationFaker().UseSeed(3484).Generate();
-        var application2 = new ApplicationFaker().UseSeed(34384).Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication()
-            .WithApplication(application1)
-            .WithApplication(application2)
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
             .Build();
-        var store = new ApplicationStoreBuilder(database).Build();
 
         var query = (IQueryable<OpenIddictLiteDBApplication> query, object state) =>
-            query.Where(x => x.Id == application1.Id || x.Id == application2.Id).Select(x => x.DisplayName);
+            query.Where(x => x.Id == applications[0].Id || x.Id == applications[1].Id).Select(x => x.DisplayName);
 
         // Act
         var result = await store.ListAsync(query!, null, default).ToListAsync();
-        
+
         // Assert
-        var verify = await Verify(result, database);
+        Assert.Multiple(
+            () => Assert.NotNull(result),
+            () => Assert.Equal(2, result.Distinct().Count()),
+            () => Assert.True(applications.Select(x => x.DisplayName).Intersect(result).Count() == 2));
     }
 
     [Fact]
     public async Task UpdateAsync_WithNullApplication_ThrowsException()
     {
         // Arrange
-        var database = new DatabaseBuilder().Build();
-        var store = new ApplicationStoreBuilder(database).Build();
+        var store = new OpenIddictLiteDBApplicationStoreBuilder().Build();
 
         // Act/Assert
         var exception = await Assert.ThrowsAsync<ArgumentNullException>(
@@ -435,18 +438,20 @@ public class OpenIddictLiteDBApplicationStoreTests
     public async Task UpdateAsync_WithApplication_UpdatesAppropriateApplication()
     {
         // Arrange
-        var application = new ApplicationFaker().UseSeed(3484).Generate();
-        var database = new DatabaseBuilder()
-            .WithApplication(application)
+        var applications = new OpenIddictLiteDBApplicationFaker().Generate(3);
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBApplicationStoreBuilder()
+            .WithApplications(applications)
+            .WithDatabase(database)
             .Build();
-        var store = new ApplicationStoreBuilder(database).Build();
 
-        application.DisplayName = "My Fabrikam";
+        applications[1].DisplayName = "My Fabrikam";
 
         // Act
-        await store.UpdateAsync(application, default);
+        await store.UpdateAsync(applications[1], default);
 
         // Assert
-        await Verify(database);
+        var result = database.Applications().FindById(applications[1].Id);
+        Assert.Equal("My Fabrikam", result.DisplayName);
     }
 }

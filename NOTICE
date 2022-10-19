@@ -6,10 +6,6 @@ Copyright (c) 2022 Steven Kuhn and contributors. All rights reserved.
 This product is based on the OpenIddict (openiddict/openiddict-core) project developed by
 Kévin Chalet and its contributors at https://github.com/openiddict/openiddict-core.
 
-Verify.SystemJson is based on the Verify.SystemJson (VerifyTests/Verify.SystemJson)
-project developed by Simon Cropp and its contributors at
-https://github.com/VerifyTests/Verify.SystemJson.
-
 =======================================================================
 OpenIddict
 © Kévin Chalet. All rights reserved.
@@ -17,13 +13,4 @@ OpenIddict
 
 Licensed under the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0).
 See https://github.com/openiddict/openiddict-core for more information concerning the
-license and the contributors participating to this project.
-
-=======================================================================
-Verify.SystemJson
-© Simon Cropp. All rights reserved.
-=======================================================================
-
-Licensed under the MIT License.
-See https://github.com/VerifyTests/Verify.SystemJson for more information concerning the
 license and the contributors participating to this project.

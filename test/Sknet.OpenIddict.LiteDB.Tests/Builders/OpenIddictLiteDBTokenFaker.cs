@@ -15,14 +15,16 @@
  */
 namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 
-public class AuthorizationFaker : Faker<OpenIddictLiteDBAuthorization>
+public class OpenIddictLiteDBTokenFaker : Faker<OpenIddictLiteDBToken>
 {
-    public AuthorizationFaker()
+    public OpenIddictLiteDBTokenFaker()
     {
+        UseSeed(1);
+        
         RuleFor(x => x.Id, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
-            .RuleFor(x => x.ApplicationId, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
             .RuleFor(x => x.ConcurrencyToken, f => f.Random.Guid().ToString())
             .RuleFor(x => x.CreationDate, f => f.Date.Past())
+            .RuleFor(x => x.ExpirationDate, f => f.Date.Future())
             .RuleFor(x => x.Properties, f => f.Random.ListItems<(string PropertyName, JsonElement JsonValue)>(new()
                 {
                     ("property1", JsonDocument.Parse("true").RootElement),
@@ -37,8 +39,6 @@ public class AuthorizationFaker : Faker<OpenIddictLiteDBAuthorization>
                 })
                 .OrderBy(x => x.PropertyName)
                 .ToImmutableDictionary(x => x.PropertyName, x => x.JsonValue))
-            .RuleFor(x => x.Scopes, f => f.Random.ListItems<string>(new() { "scope1", "scope2", "scope3" })
-                .ToImmutableArray())
             .RuleFor(x => x.Status, f => f.PickRandom(new[]
                 {
                     Statuses.Inactive,
@@ -48,8 +48,6 @@ public class AuthorizationFaker : Faker<OpenIddictLiteDBAuthorization>
                     Statuses.Valid
                 }))
             .RuleFor(x => x.Subject, f => f.Person.UserName)
-            .RuleFor(x => x.Type, f => f.PickRandom(new[] { AuthorizationTypes.AdHoc, AuthorizationTypes.Permanent }));
-
-        UseSeed(9474);
+            .RuleFor(x => x.Type, f => f.PickRandom(new[] { TokenTypes.Bearer }));
     }
 }

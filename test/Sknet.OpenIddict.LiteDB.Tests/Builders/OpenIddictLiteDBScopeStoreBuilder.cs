@@ -15,16 +15,16 @@
  */
 namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 
-public class AuthorizationStoreBuilder
+public class OpenIddictLiteDBScopeStoreBuilder
 {
     private readonly ILiteDatabase _database;
 
-    public AuthorizationStoreBuilder(ILiteDatabase database)
+    public OpenIddictLiteDBScopeStoreBuilder(ILiteDatabase database)
     {
         _database = database;
     }
 
-    public OpenIddictLiteDBAuthorizationStore<OpenIddictLiteDBAuthorization> Build()
+    public OpenIddictLiteDBScopeStore<OpenIddictLiteDBScope> Build()
     {
         var contextMock = new Mock<IOpenIddictLiteDBContext>();
         contextMock
@@ -37,6 +37,6 @@ public class AuthorizationStoreBuilder
             .SetupGet(x => x.CurrentValue)
             .Returns(options);
 
-        return new OpenIddictLiteDBAuthorizationStore<OpenIddictLiteDBAuthorization>(contextMock.Object, optionsMock.Object);
+        return new OpenIddictLiteDBScopeStore<OpenIddictLiteDBScope>(contextMock.Object, optionsMock.Object);
     }
 }

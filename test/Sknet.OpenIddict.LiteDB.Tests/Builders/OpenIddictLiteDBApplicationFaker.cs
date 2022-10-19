@@ -15,10 +15,12 @@
  */
 namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 
-public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
+public class OpenIddictLiteDBApplicationFaker : Faker<OpenIddictLiteDBApplication>
 {
-    public ApplicationFaker()
+    public OpenIddictLiteDBApplicationFaker()
     {
+        UseSeed(1);
+        
         RuleFor(x => x.Id, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
             .RuleFor(x => x.ClientId, f => f.Random.AlphaNumeric(32))
             .RuleFor(x => x.ClientSecret, f => f.Random.AlphaNumeric(32))
@@ -34,7 +36,7 @@ public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
                 })
                 .OrderBy(x => x.Culture.Name)
                 .ToImmutableDictionary(x => x.Culture, x => x.DisplayName))
-            .RuleFor(x => x.Permissions, f => f.Random.ListItems<string>(new() { "scope1", "scope2", "scope3" })
+            .RuleFor(x => x.Permissions, f => f.Random.ListItems<string>(new() { "permission1", "permission2", "permission3" })
                 .ToImmutableArray())
             .RuleFor(x => x.PostLogoutRedirectUris, f => f.Random.ListItems<string>(new()
                 {
@@ -66,7 +68,5 @@ public class ApplicationFaker : Faker<OpenIddictLiteDBApplication>
                 .ToImmutableArray())
             .RuleFor(x => x.Requirements, f => ImmutableArray.Create<string>())
             .RuleFor(x => x.Type, f => f.PickRandom(new[] { ClientTypes.Confidential, ClientTypes.Public }));
-
-        UseSeed(39571);
     }
 }

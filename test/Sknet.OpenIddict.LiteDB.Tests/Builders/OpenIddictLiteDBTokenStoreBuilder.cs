@@ -15,11 +15,11 @@
  */
 namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 
-public class TokenStoreBuilder
+public class OpenIddictLiteDBTokenStoreBuilder
 {
     private readonly ILiteDatabase _database;
 
-    public TokenStoreBuilder(ILiteDatabase database)
+    public OpenIddictLiteDBTokenStoreBuilder(ILiteDatabase database)
     {
         _database = database;
     }
