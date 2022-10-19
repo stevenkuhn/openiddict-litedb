@@ -17,21 +17,44 @@ namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 
 public class OpenIddictLiteDBTokenStoreBuilder
 {
-    private readonly ILiteDatabase _database;
+    private ILiteDatabase? _database;
+    private readonly List<OpenIddictLiteDBToken> _tokens = new();
 
-    public OpenIddictLiteDBTokenStoreBuilder(ILiteDatabase database)
+    public OpenIddictLiteDBTokenStoreBuilder WithDatabase(ILiteDatabase database)
     {
         _database = database;
+        return this;
+    }
+
+    public OpenIddictLiteDBTokenStoreBuilder WithTokens(params OpenIddictLiteDBToken[] tokens)
+    {
+        _tokens.AddRange(tokens);
+        return this;
+    }
+
+    public OpenIddictLiteDBTokenStoreBuilder WithTokens(IEnumerable<OpenIddictLiteDBToken> tokens)
+    {
+        _tokens.AddRange(tokens);
+        return this;
     }
 
     public OpenIddictLiteDBTokenStore<OpenIddictLiteDBToken> Build()
     {
+        var database = _database ?? new OpenIddictLiteDatabase(":memory:");
+        var options = new OpenIddictLiteDBOptions();
+
+        if (_tokens.Count > 0)
+        {
+            database
+                .GetCollection<OpenIddictLiteDBToken>(options.TokensCollectionName)
+                .InsertBulk(_tokens);
+        }
+
         var contextMock = new Mock<IOpenIddictLiteDBContext>();
         contextMock
             .Setup(x => x.GetDatabaseAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(_database);
-
-        var options = new OpenIddictLiteDBOptions();
+            .ReturnsAsync(database);
+        
         var optionsMock = new Mock<IOptionsMonitor<OpenIddictLiteDBOptions>>();
         optionsMock
             .SetupGet(x => x.CurrentValue)

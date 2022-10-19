@@ -15,18 +15,36 @@
  */
 namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 
-public class OpenIddictLiteDBTokenFaker : Faker<OpenIddictLiteDBToken>
+public class OpenIddictLiteDBScopeFaker : Faker<OpenIddictLiteDBScope>
 {
-    public OpenIddictLiteDBTokenFaker()
+    public OpenIddictLiteDBScopeFaker()
     {
         UseSeed(1);
-        
+
         RuleFor(x => x.Id, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
-            .RuleFor(x => x.ApplicationId, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
-            .RuleFor(x => x.AuthorizationId, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
+
             .RuleFor(x => x.ConcurrencyToken, f => f.Random.Guid().ToString())
-            .RuleFor(x => x.CreationDate, f => f.Date.Past())
-            .RuleFor(x => x.ExpirationDate, f => f.Date.Future())
+            .RuleFor(x => x.Description, f => f.Lorem.Sentence())
+            .RuleFor(x => x.Descriptions, f => f.Random.ListItems<(CultureInfo Culture, string Description)>(new()
+                {
+                    (CultureInfo.GetCultureInfo("en"), f.Lorem.Sentence()),
+                    (CultureInfo.GetCultureInfo("fr"), f.Lorem.Sentence()),
+                    (CultureInfo.GetCultureInfo("de"), f.Lorem.Sentence()),
+                    (CultureInfo.GetCultureInfo("es"), f.Lorem.Sentence())
+                })
+                .OrderBy(x => x.Culture.Name)
+                .ToImmutableDictionary(x => x.Culture, x => x.Description))
+            .RuleFor(x => x.DisplayName, f => f.Commerce.ProductName())
+            .RuleFor(x => x.DisplayNames, f => f.Random.ListItems<(CultureInfo Culture, string DisplayName)>(new()
+                {
+                    (CultureInfo.GetCultureInfo("en"), f.Commerce.ProductName()),
+                    (CultureInfo.GetCultureInfo("fr"), f.Commerce.ProductName()),
+                    (CultureInfo.GetCultureInfo("de"), f.Commerce.ProductName()),
+                    (CultureInfo.GetCultureInfo("es"), f.Commerce.ProductName())
+                })
+                .OrderBy(x => x.Culture.Name)
+                .ToImmutableDictionary(x => x.Culture, x => x.DisplayName))
+            .RuleFor(x => x.Name, f => f.Commerce.ProductName())
             .RuleFor(x => x.Properties, f => f.Random.ListItems<(string PropertyName, JsonElement JsonValue)>(new()
                 {
                     ("property1", JsonDocument.Parse("true").RootElement),
@@ -40,16 +58,6 @@ public class OpenIddictLiteDBTokenFaker : Faker<OpenIddictLiteDBToken>
                     ("property9", JsonDocument.Parse(@"{""key"": ""value""}").RootElement)
                 })
                 .OrderBy(x => x.PropertyName)
-                .ToImmutableDictionary(x => x.PropertyName, x => x.JsonValue))
-            .RuleFor(x => x.Status, f => f.PickRandom(new[]
-                {
-                    Statuses.Inactive,
-                    Statuses.Redeemed,
-                    Statuses.Rejected,
-                    Statuses.Revoked,
-                    Statuses.Valid
-                }))
-            .RuleFor(x => x.Subject, f => f.Person.UserName)
-            .RuleFor(x => x.Type, f => f.PickRandom(new[] { TokenTypes.Bearer }));
+                .ToImmutableDictionary(x => x.PropertyName, x => x.JsonValue));
     }
 }
