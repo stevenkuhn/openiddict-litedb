@@ -41,6 +41,7 @@ public class OpenIddictLiteDBTokenFaker : Faker<OpenIddictLiteDBToken>
                 })
                 .OrderBy(x => x.PropertyName)
                 .ToImmutableDictionary(x => x.PropertyName, x => x.JsonValue))
+            .RuleFor(x => x.ReferenceId, f => f.Random.Guid().ToString())
             .RuleFor(x => x.Status, f => f.PickRandom(new[]
                 {
                     Statuses.Inactive,

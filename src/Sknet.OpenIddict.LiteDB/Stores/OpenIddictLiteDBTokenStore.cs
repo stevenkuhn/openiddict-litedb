@@ -285,7 +285,7 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         var database = await Context.GetDatabaseAsync(cancellationToken);
         var collection = database.GetCollection<TToken>(Options.CurrentValue.TokensCollectionName);
 
-        return collection.FindById(identifier);
+        return collection.FindById(new ObjectId(identifier));
     }
 
     /// <inheritdoc/>

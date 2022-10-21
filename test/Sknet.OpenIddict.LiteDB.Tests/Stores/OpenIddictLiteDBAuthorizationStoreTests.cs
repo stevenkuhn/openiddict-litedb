@@ -627,7 +627,7 @@ public class OpenIddictLiteDBAuthorizationStoreTests
     }
 
     [Fact]
-    public async Task InstantiateAsync_ReturnsScope()
+    public async Task InstantiateAsync_ReturnsAuthorization()
     {
         // Arrange
         var store = new OpenIddictLiteDBAuthorizationStoreBuilder().Build();
@@ -641,7 +641,7 @@ public class OpenIddictLiteDBAuthorizationStoreTests
     }
 
     [Fact]
-    public async Task ListAsync_WithCountAndOffset_ReturnsScopes()
+    public async Task ListAsync_WithCountAndOffset_ReturnsAuthorizations()
     {
         // Arrange
         var authorizations = new OpenIddictLiteDBAuthorizationFaker().Generate(3);
