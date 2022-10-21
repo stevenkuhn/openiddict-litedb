@@ -140,8 +140,8 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client,
-        string status, CancellationToken cancellationToken)
+        string subject, string client, string status, 
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(subject))
         {
@@ -181,8 +181,8 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client,
-        string status, string type, CancellationToken cancellationToken)
+        string subject, string client, string status, string type,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(subject))
         {
@@ -228,8 +228,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client,
-        string status, string type,
+        string subject, string client, string status, string type,
         ImmutableArray<string> scopes, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(subject))
@@ -246,7 +245,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         {
             throw new ArgumentException("The status cannot be null or empty.", nameof(status));
         }
-
+        
         if (string.IsNullOrEmpty(type))
         {
             throw new ArgumentException("The type cannot be null or empty.", nameof(type));
@@ -258,15 +257,16 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         {
             var database = await Context.GetDatabaseAsync(cancellationToken);
             var collection = database.GetCollection<TAuthorization>(Options.CurrentValue.AuthorizationsCollectionName);
-
+          
             var authorizations = collection.Query()
                 .Where(entity =>
                     entity.Subject == subject &&
                     entity.ApplicationId == new ObjectId(client) &&
                     entity.Status == status &&
-                    entity.Type == type &&
-                    Enumerable.All(scopes, scope => entity.Scopes != null && entity.Scopes.Contains(scope)))
-                .ToEnumerable().ToAsyncEnumerable();
+                    entity.Type == type)
+                .ToEnumerable()
+                .Where(entity => scopes.All(scope => entity.Scopes.Contains(scope)))
+                .ToAsyncEnumerable();
 
             await foreach (var authorization in authorizations)
             {
@@ -313,7 +313,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         var database = await Context.GetDatabaseAsync(cancellationToken);
         var collection = database.GetCollection<TAuthorization>(Options.CurrentValue.AuthorizationsCollectionName);
 
-        return collection.FindById(identifier);
+        return collection.FindById(new ObjectId(identifier));
     }
 
     /// <inheritdoc/>

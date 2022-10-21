@@ -57,6 +57,15 @@ public class OpenIddictLiteDBScopeFaker : Faker<OpenIddictLiteDBScope>
                     ("property9", JsonDocument.Parse(@"{""key"": ""value""}").RootElement)
                 })
                 .OrderBy(x => x.PropertyName)
-                .ToImmutableDictionary(x => x.PropertyName, x => x.JsonValue));
+                .ToImmutableDictionary(x => x.PropertyName, x => x.JsonValue))
+            .RuleFor(x => x.Resources, f => f.Random.ListItems<string>(new()
+                {
+                    "resource1",
+                    "resource2",
+                    "resource3",
+                    "resource4",
+                    "resource5"
+                })
+                .ToImmutableArray());
     }
 }

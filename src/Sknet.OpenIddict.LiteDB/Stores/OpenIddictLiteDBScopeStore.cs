@@ -315,7 +315,6 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         {
             return new(Activator.CreateInstance<TScope>());
         }
-
         catch (MemberAccessException exception)
         {
             return new(Task.FromException<TScope>(
