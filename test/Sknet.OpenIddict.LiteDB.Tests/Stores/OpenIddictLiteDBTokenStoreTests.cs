@@ -588,6 +588,8 @@ public class OpenIddictLiteDBTokenStoreTests
             () => Assert.True(tokens.Select(x => x.Subject).Intersect(result).Count() == 2));
     }
 
+    
+
     [Fact]
     public async Task UpdateAsync_WithNullToken_ThrowsException()
     {
