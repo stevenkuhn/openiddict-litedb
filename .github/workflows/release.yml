@@ -32,7 +32,7 @@ jobs:
     - name: Push assets to NuGet 
       run: >
         ./build.sh
-          --target PublishToNuGetFeed
-          --skip PublishArtifacts
-          --nuget-api-key ${{ secrets.NUGET_APIKEY }}
-          --nuget-source ${{ secrets.NUGET_SOURCE }}
+        --target PublishToNuGetFeed
+        --skip PublishArtifacts
+        --nuget-api-key ${{ secrets.NUGET_APIKEY }}
+        --nuget-source ${{ secrets.NUGET_SOURCE }}
