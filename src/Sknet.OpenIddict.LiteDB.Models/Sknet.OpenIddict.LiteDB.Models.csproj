@@ -16,7 +16,7 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/stevenkuhn/openiddict-litedb</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>$(PackageTags);litedb;opendddict;models</PackageTags>
+    <PackageTags>$(PackageTags);litedb;openiddict;models</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/stevenkuhn/openiddict-litedb.git</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
