@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageDownload Include="GitVersion.Tool" Version="[5.10.3]" />
+    <PackageDownload Include="NuGet.CommandLine" Version="[6.3.1]" />
   </ItemGroup>
 
 </Project>
