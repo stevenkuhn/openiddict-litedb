@@ -588,7 +588,155 @@ public class OpenIddictLiteDBTokenStoreTests
             () => Assert.True(tokens.Select(x => x.Subject).Intersect(result).Count() == 2));
     }
 
-    
+    [Fact]
+    public async Task PruneAsync_WithTokensCreatedBeforeThreshold_ShouldRemoveTokens()
+    {
+        // Arrange
+        var threshold = DateTimeOffset.UtcNow.AddDays(-1);
+
+        var tokenFaker = new OpenIddictLiteDBTokenFaker()
+            .RuleFor(x => x.Status, f => f.PickRandom(new[]
+                {
+                    Statuses.Redeemed,
+                    Statuses.Rejected,
+                    Statuses.Revoked,
+                }));
+
+        var tokensToPrune = tokenFaker
+            .RuleFor(x => x.CreationDate, f => f.Date.PastOffset(1, threshold))
+            .Generate(3);
+        var tokensToNotPrune = tokenFaker
+            .RuleFor(x => x.CreationDate, f => f.Date.FutureOffset(1, threshold))
+            .Generate(3);
+
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBTokenStoreBuilder()
+            .WithTokens(tokensToPrune)
+            .WithTokens(tokensToNotPrune)
+            .WithDatabase(database)
+            .Build();
+
+        // Act
+        await store.PruneAsync(threshold, default);
+
+        // Assert
+        var result = database.Tokens().FindAll();
+        result.Should().BeEquivalentTo(tokensToNotPrune, o => o.Including(x => x.Id));
+    }
+
+    [Fact]
+    public async Task PruneAsync_WithTokensThatAreNotInactiveAndNotValid_ShouldRemoveTokens()
+    {
+        var threshold = DateTimeOffset.UtcNow.AddDays(-1);
+
+        var tokenFaker = new OpenIddictLiteDBTokenFaker()
+            .RuleFor(x => x.CreationDate, f => f.Date.PastOffset(1, threshold));
+
+        var tokensToPrune = tokenFaker
+            .RuleFor(x => x.Status, f => f.PickRandom(new[]
+                {
+                    Statuses.Redeemed,
+                    Statuses.Rejected,
+                    Statuses.Revoked,
+                }))
+            .Generate(3);
+        var tokensToNotPrune = tokenFaker
+            .RuleFor(x => x.Status, f => f.PickRandom(new[]
+                {
+                    Statuses.Inactive,
+                    Statuses.Valid
+                }))
+            .Generate(3);
+
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBTokenStoreBuilder()
+            .WithTokens(tokensToPrune)
+            .WithTokens(tokensToNotPrune)
+            .WithDatabase(database)
+            .Build();
+
+        // Act
+        await store.PruneAsync(threshold, default);
+
+        // Assert
+        var result = database.Tokens().FindAll();
+        result.Should().BeEquivalentTo(tokensToNotPrune, o => o.Including(x => x.Id));
+    }
+
+    [Fact]
+    public async Task PruneAsync_WithTokensThatAreExpired_ShouldRemoveTokens()
+    {
+        var threshold = DateTimeOffset.UtcNow.AddDays(-1);
+
+        var tokenFaker = new OpenIddictLiteDBTokenFaker()
+            .RuleFor(x => x.CreationDate, f => f.Date.PastOffset(1, threshold))
+            .RuleFor(x => x.Status, f => f.PickRandom(new[]
+                {
+                    Statuses.Inactive,
+                    Statuses.Valid
+                }));
+
+        var tokensToPrune = tokenFaker
+            .RuleFor(x => x.ExpirationDate, f => f.Date.PastOffset(1, DateTimeOffset.UtcNow))
+            .Generate(3);
+        var tokensToNotPrune = tokenFaker
+            .RuleFor(x => x.ExpirationDate, f => f.Date.FutureOffset(1, DateTimeOffset.UtcNow))
+            .Generate(3);
+
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBTokenStoreBuilder()
+            .WithTokens(tokensToPrune)
+            .WithTokens(tokensToNotPrune)
+            .WithDatabase(database)
+            .Build();
+
+        // Act
+        await store.PruneAsync(threshold, default);
+
+        // Assert
+        var result = database.Tokens().FindAll();
+        result.Should().BeEquivalentTo(tokensToNotPrune, o => o.Including(x => x.Id));
+    }
+
+    [Fact]
+    public async Task PruneAsync_WithTokensThatHaveInvalidAuthorizations_ShouldRemoveTokens()
+    {
+        var authorizations = new OpenIddictLiteDBAuthorizationFaker().Generate(2);
+        authorizations[0].Status = Statuses.Valid;
+        authorizations[1].Status = Statuses.Inactive;
+
+        var threshold = DateTimeOffset.UtcNow.AddDays(-1);
+        var tokenFaker = new OpenIddictLiteDBTokenFaker()
+            .RuleFor(x => x.CreationDate, f => f.Date.PastOffset(1, threshold))
+            .RuleFor(x => x.Status, f => f.PickRandom(new[]
+                {
+                    Statuses.Inactive,
+                    Statuses.Valid
+                }))
+            .RuleFor(x => x.ExpirationDate, f => f.Date.FutureOffset(1, DateTimeOffset.UtcNow));
+
+        var tokensToPrune = tokenFaker
+            .RuleFor(x => x.AuthorizationId, f => authorizations[1].Id)
+            .Generate(3);
+        var tokensToNotPrune = tokenFaker
+            .RuleFor(x => x.AuthorizationId, f => authorizations[0].Id)
+            .Generate(3);
+
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBTokenStoreBuilder()
+            .WithTokens(tokensToPrune)
+            .WithTokens(tokensToNotPrune)
+            .WithAuthorizations(authorizations)
+            .WithDatabase(database)
+            .Build();
+
+        // Act
+        await store.PruneAsync(threshold, default);
+
+        // Assert
+        var result = database.Tokens().FindAll();
+        result.Should().BeEquivalentTo(tokensToNotPrune, o => o.Including(x => x.Id));
+    }
 
     [Fact]
     public async Task UpdateAsync_WithNullToken_ThrowsException()

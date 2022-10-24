@@ -25,8 +25,8 @@ public class OpenIddictLiteDBTokenFaker : Faker<OpenIddictLiteDBToken>
             .RuleFor(x => x.ApplicationId, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
             .RuleFor(x => x.AuthorizationId, f => new ObjectId(f.Random.Hexadecimal(24, prefix: "")))
             .RuleFor(x => x.ConcurrencyToken, f => f.Random.Guid().ToString())
-            .RuleFor(x => x.CreationDate, f => f.Date.Past())
-            .RuleFor(x => x.ExpirationDate, f => f.Date.Future())
+            .RuleFor(x => x.CreationDate, f => f.Date.PastOffset())
+            .RuleFor(x => x.ExpirationDate, f => f.Date.FutureOffset())
             .RuleFor(x => x.Properties, f => f.Random.ListItems<(string PropertyName, JsonElement JsonValue)>(new()
                 {
                     ("property1", JsonDocument.Parse("true").RootElement),

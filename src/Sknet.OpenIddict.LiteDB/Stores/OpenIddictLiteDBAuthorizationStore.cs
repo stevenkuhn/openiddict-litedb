@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using static OpenIddict.Abstractions.OpenIddictConstants;
+
 namespace Sknet.OpenIddict.LiteDB;
 
 /// <summary>
@@ -390,7 +392,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
             return new(result: null);
         }
 
-        return new(DateTime.SpecifyKind(authorization.CreationDate.Value, DateTimeKind.Utc));
+        return new(authorization.CreationDate);
     }
 
     /// <inheritdoc/>
@@ -526,57 +528,46 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
             }
         }
     }
-
+    
     /// <inheritdoc/>
-    public virtual ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
+    public async virtual ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var database = await Context.GetDatabaseAsync(cancellationToken);
+        var authorizationCollection = database.GetCollection<TAuthorization>(Options.CurrentValue.AuthorizationsCollectionName);
 
-        //var database = await Context.GetDatabaseAsync(cancellationToken);
-        //var collection = database.GetCollection<TAuthorization>(Options.CurrentValue.AuthorizationsCollectionName);
+        var query = from auth in authorizationCollection.Query()
+                    // only prune authorizations created before threshold
+                    where auth.CreationDate < threshold.UtcDateTime
+                    // prune tokens that are not valid
+                    where auth.Status != Statuses.Valid
+                    select auth.Id;
+        var authorizations = query.ToList();
 
-        // Note: directly deleting the resulting set of an aggregate query is not supported by MongoDb
-        // To work around this limitation, the authorization identifiers are stored in an intermediate
-        // list and delete requests are sent to remove the documents corresponding to these identifiers.
+        // prune adhoc authorizations that have no tokens
+        query = from auth in authorizationCollection.Query()
+                where auth.CreationDate < threshold.UtcDateTime
+                where auth.Status == Statuses.Valid
+                where auth.Type == AuthorizationTypes.AdHoc
+                select auth.Id;
+        var adhocAuthorizations = new HashSet<ObjectId>(query.ToEnumerable());
 
-        //var identifiers =
-        //    await (from authorization in collection.AsQueryable()
-        //           join token in database.GetCollection<OpenIddictLiteDBToken>(Options.CurrentValue.TokensCollectionName).AsQueryable()
-        //                      on authorization.Id equals token.AuthorizationId into tokens
-        //           where authorization.CreationDate < threshold.UtcDateTime
-        //           where authorization.Status != Statuses.Valid ||
-        //                (authorization.Type == AuthorizationTypes.AdHoc && !tokens.Any())
-        //           select authorization.Id).ToListAsync(cancellationToken);
+        var tokenCollection = database.GetCollection(Options.CurrentValue.TokensCollectionName);
+        var adhocAuthorizationsWithTokens = new HashSet<ObjectId>(tokenCollection.Query()
+            .GroupBy("authorization_id")
+            .Where(x => adhocAuthorizations.Contains(x["authorization_id"]))
+            .Select("{authorization_id:@key}")
+            .ToEnumerable()
+            .Select(x => x["authorization_id"].AsObjectId));
 
-        // Note: to avoid generating delete requests with very large filters, a buffer is used here and the
-        // maximum number of elements that can be removed by a single call to PruneAsync() is deliberately limited.
-        //foreach (var buffer in Buffer(identifiers.Take(1_000_000), 1_000))
-        //{
-        //    await collection.DeleteManyAsync(authorization => buffer.Contains(authorization.Id), cancellationToken);
-        //}
+        adhocAuthorizations.SymmetricExceptWith(adhocAuthorizationsWithTokens);
+        authorizations.AddRange(adhocAuthorizations);
 
-        //static IEnumerable<List<TSource>> Buffer<TSource>(IEnumerable<TSource> source, int count)
-        //{
-        //    List<TSource>? buffer = null;
-
-        //    foreach (var element in source)
-        //    {
-        //        buffer ??= new List<TSource>(capacity: 1);
-        //        buffer.Add(element);
-
-        //        if (buffer.Count == count)
-        //        {
-        //            yield return buffer;
-
-        //            buffer = null;
-        //        }
-        //    }
-
-        //    if (buffer is not null)
-        //    {
-        //        yield return buffer;
-        //    }
-        //}
+        database.BeginTrans();
+        foreach (var authorization in authorizations)
+        {
+            authorizationCollection.Delete(authorization);
+        }
+        database.Commit();
     }
 
     /// <inheritdoc/>

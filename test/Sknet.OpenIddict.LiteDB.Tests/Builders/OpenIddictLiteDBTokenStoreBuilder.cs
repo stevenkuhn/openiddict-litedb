@@ -18,8 +18,15 @@ namespace Sknet.OpenIddict.LiteDB.Tests.Builders;
 public class OpenIddictLiteDBTokenStoreBuilder
 {
     private ILiteDatabase? _database;
+    private readonly List<OpenIddictLiteDBAuthorization> _authorizations = new();
     private readonly List<OpenIddictLiteDBToken> _tokens = new();
 
+    public OpenIddictLiteDBTokenStoreBuilder WithAuthorizations(IEnumerable<OpenIddictLiteDBAuthorization> authorizations)
+    {
+        _authorizations.AddRange(authorizations);
+        return this;
+    }
+    
     public OpenIddictLiteDBTokenStoreBuilder WithDatabase(ILiteDatabase database)
     {
         _database = database;
@@ -43,6 +50,13 @@ public class OpenIddictLiteDBTokenStoreBuilder
         var database = _database ?? new OpenIddictLiteDatabase(":memory:");
         var options = new OpenIddictLiteDBOptions();
 
+        if (_authorizations.Count > 0)
+        {
+            database
+                .GetCollection<OpenIddictLiteDBAuthorization>(options.AuthorizationsCollectionName)
+                .InsertBulk(_authorizations);
+        }
+        
         if (_tokens.Count > 0)
         {
             database

@@ -37,7 +37,7 @@ public class OpenIddictLiteDBAuthorization
     /// Gets or sets the UTC creation date of the current authorization.
     /// </summary>
     [BsonField("creation_date")]
-    public virtual DateTime? CreationDate { get; set; }
+    public virtual DateTimeOffset? CreationDate { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier associated with the current authorization.

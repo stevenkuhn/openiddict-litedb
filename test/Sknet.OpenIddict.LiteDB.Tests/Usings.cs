@@ -1,4 +1,5 @@
 global using Bogus;
+global using FluentAssertions;
 global using LiteDB;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;

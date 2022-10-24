@@ -423,6 +423,116 @@ public class OpenIddictLiteDBApplicationStoreTests
     }
 
     [Fact]
+    public async Task PruneAsync_WithAuthorizationsCreatedBeforeThreshold_ShouldRemoveAuthorizations()
+    {
+        // Arrange
+        var threshold = DateTimeOffset.UtcNow.AddDays(-1);
+
+        var authorizationFaker = new OpenIddictLiteDBAuthorizationFaker();
+        
+        var authorizationsToPrune = authorizationFaker
+            .RuleFor(x => x.CreationDate, f => f.Date.PastOffset(1, threshold))
+            .Generate(3);
+        var authorizationsToNotPrune = authorizationFaker
+            .RuleFor(x => x.CreationDate, f => f.Date.FutureOffset(1, threshold))
+            .Generate(3);
+
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBAuthorizationStoreBuilder()
+            .WithAuthorizations(authorizationsToPrune)
+            .WithAuthorizations(authorizationsToNotPrune)
+            .WithDatabase(database)
+            .Build();
+
+        // Act
+        await store.PruneAsync(threshold, default);
+
+        // Assert
+        var result = database.Authorizations().FindAll();
+        result.Should().BeEquivalentTo(authorizationsToNotPrune, o => o.Including(x => x.Id));
+    }
+
+    [Fact]
+    public async Task PruneAsync_WithAuthorizationsThatAreNotValid_ShouldRemoveAuthorizations()
+    {
+        // Arrange
+        var threshold = DateTimeOffset.UtcNow.AddDays(-1);
+
+        var authorizationFaker = new OpenIddictLiteDBAuthorizationFaker()
+            .RuleFor(x => x.CreationDate, f => f.Date.PastOffset(1, threshold));
+
+        var authorizationsToPrune = authorizationFaker
+            .RuleFor(x => x.Status, f => f.PickRandom(new[]
+                {
+                    Statuses.Inactive,
+                    Statuses.Redeemed,
+                    Statuses.Rejected,
+                    Statuses.Revoked,
+                }))
+            .Generate(3);
+        var authorizationsToNotPrune = authorizationFaker
+            .RuleFor(x => x.Status, f => Statuses.Valid)
+            .Generate(3);
+        
+        var tokenFaker = new OpenIddictLiteDBTokenFaker();
+        var tokensForAuthorizationToPrune = tokenFaker
+            .RuleFor(x => x.AuthorizationId, f => authorizationsToPrune[f.IndexFaker % 3].Id)
+            .Generate(9);
+        var tokensForAuthorizationToNotPrune = tokenFaker
+            .RuleFor(x => x.AuthorizationId, f => authorizationsToNotPrune[f.IndexFaker % 3].Id)
+            .Generate(9);
+
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBAuthorizationStoreBuilder()
+            .WithAuthorizations(authorizationsToPrune)
+            .WithAuthorizations(authorizationsToNotPrune)
+            .WithTokens(tokensForAuthorizationToPrune)
+            .WithTokens(tokensForAuthorizationToNotPrune)
+            .WithDatabase(database)
+            .Build();
+
+        // Act
+        await store.PruneAsync(threshold, default);
+
+        // Assert
+        var result = database.Authorizations().FindAll();
+        result.Should().BeEquivalentTo(authorizationsToNotPrune, o => o.Including(x => x.Id));
+    }
+
+    [Fact]
+    public async Task PruneAsync_WithAdhocAuthorizationsWithZeroTokens_ShouldRemoveAuthorizations()
+    {
+        // Arrange
+        var threshold = DateTimeOffset.UtcNow.AddDays(-1);
+        var authorizationFaker = new OpenIddictLiteDBAuthorizationFaker()
+            .RuleFor(x => x.CreationDate, f => f.Date.PastOffset(1, threshold))
+            .RuleFor(x => x.Status, f => Statuses.Valid)
+            .RuleFor(x => x.Type, f => AuthorizationTypes.AdHoc);
+
+        var authorizationsToPrune = authorizationFaker.Generate(3);
+        var authorizationsToNotPrune = authorizationFaker.Generate(3);
+
+        var tokens = new OpenIddictLiteDBTokenFaker()
+            .RuleFor(x => x.AuthorizationId, f => authorizationsToNotPrune[f.IndexFaker % 3].Id)
+            .Generate(9);
+
+        var database = new OpenIddictLiteDatabase(":memory:");
+        var store = new OpenIddictLiteDBAuthorizationStoreBuilder()
+            .WithAuthorizations(authorizationsToPrune)
+            .WithAuthorizations(authorizationsToNotPrune)
+            .WithTokens(tokens)
+            .WithDatabase(database)
+            .Build();
+
+        // Act
+        await store.PruneAsync(threshold, default);
+
+        // Assert
+        var result = database.Authorizations().FindAll();
+        result.Should().BeEquivalentTo(authorizationsToNotPrune, o => o.Including(x => x.Id));
+    }
+
+    [Fact]
     public async Task UpdateAsync_WithNullApplication_ThrowsException()
     {
         // Arrange
