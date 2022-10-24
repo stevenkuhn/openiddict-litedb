@@ -189,8 +189,9 @@ class Build : NukeBuild
         {
             Log.Debug($"Uploading NuGet package(s) to '{NuGetSource}'...");
 
-            NuGetPush(s => s
+            DotNetNuGetPush(s => s
                 .SetApiKey(NuGetApiKey)
+                .SetSkipDuplicate(true)
                 .SetSource(NuGetSource)
                 .SetTargetPath(ArtifactsDirectory / $"Sknet.*.{GitVersion.SemVer}.nupkg"));
         });
