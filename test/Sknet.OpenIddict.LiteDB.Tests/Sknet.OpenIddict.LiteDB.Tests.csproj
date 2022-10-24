@@ -31,8 +31,4 @@
     <ProjectReference Include="..\..\src\Sknet.OpenIddict.LiteDB\Sknet.OpenIddict.LiteDB.csproj" />
   </ItemGroup>
   
-  <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);**/*.ncrunchproject</DefaultItemExcludes>
-  </PropertyGroup>
-
 </Project>

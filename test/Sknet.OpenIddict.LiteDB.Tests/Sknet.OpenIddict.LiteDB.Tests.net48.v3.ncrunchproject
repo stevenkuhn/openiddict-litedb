@@ -1,7 +1,0 @@
-﻿<ProjectConfiguration>
-  <Settings>
-    <FilesExcludedFromAutoBuild>
-      <Value>*.received.txt</Value>
-    </FilesExcludedFromAutoBuild>
-  </Settings>
-</ProjectConfiguration>
