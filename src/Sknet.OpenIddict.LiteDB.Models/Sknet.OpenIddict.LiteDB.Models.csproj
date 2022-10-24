@@ -1,46 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>net461;netstandard2.0;net6.0</TargetFrameworks>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<LangVersion>10.0</LangVersion>
+  <PropertyGroup>
+    <TargetFrameworks>net461;netstandard2.0;net6.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>10.0</LangVersion>
 
-		<Authors>Steven Kuhn</Authors>
-		<Copyright>Copyright (c) 2022 Steven Kuhn and contributors</Copyright>
-		<Description>Document-oriented entities for the OpenIddict LiteDB stores.</Description>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<IncludeSymbols>True</IncludeSymbols>
-		<PackageIcon>icon.png</PackageIcon>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/stevenkuhn/openiddict-litedb</PackageProjectUrl>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>$(PackageTags);litedb;models</PackageTags>
-		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/stevenkuhn/openiddict-litedb.git</RepositoryUrl>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	</PropertyGroup>
+    <Authors>Steven Kuhn</Authors>
+    <Copyright>Copyright (c) 2022 Steven Kuhn and contributors</Copyright>
+    <Description>Document-oriented entities for the OpenIddict LiteDB stores.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IncludeSymbols>True</IncludeSymbols>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/stevenkuhn/openiddict-litedb</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>$(PackageTags);litedb;opendddict;models</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/stevenkuhn/openiddict-litedb.git</RepositoryUrl>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
 
-	<ItemGroup Condition="$(TargetFramework) == 'net461'">
-		<Reference Include="System.Net.Http" />
-	</ItemGroup>
+  <ItemGroup Condition="$(TargetFramework) == 'net461'">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <None Include="..\..\icon.png">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Include="..\..\README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="LiteDB" Version="5.0.12" />
-		<PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
-		<PackageReference Include="System.Text.Json" Version="6.0.6" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.12" />
+    <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.6" />
+  </ItemGroup>
 
 </Project>
