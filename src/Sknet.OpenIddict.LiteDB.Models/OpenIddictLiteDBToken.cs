@@ -43,13 +43,13 @@ public class OpenIddictLiteDBToken
     /// Gets or sets the UTC creation date of the current token.
     /// </summary>
     [BsonField("creation_date")]
-    public virtual DateTime? CreationDate { get; set; }
+    public virtual DateTimeOffset? CreationDate { get; set; }
 
     /// <summary>
     /// Gets or sets the UTC expiration date of the current token.
     /// </summary>
     [BsonField("expiration_date")]
-    public virtual DateTime? ExpirationDate { get; set; }
+    public virtual DateTimeOffset? ExpirationDate { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier associated with the current token.
@@ -69,13 +69,13 @@ public class OpenIddictLiteDBToken
     /// Gets or sets the additional properties associated with the current token.
     /// </summary>
     [BsonField("properties")]
-    public virtual IReadOnlyDictionary<string, JsonElement>? Properties { get; set; }
+    public virtual ImmutableDictionary<string, JsonElement>? Properties { get; set; }
 
     /// <summary>
     /// Gets or sets the UTC redemption date of the current token.
     /// </summary>
     [BsonField("redemption_date")]
-    public virtual DateTime? RedemptionDate { get; set; }
+    public virtual DateTimeOffset? RedemptionDate { get; set; }
 
     /// <summary>
     /// Gets or sets the reference identifier associated

@@ -24,7 +24,7 @@ public interface IOpenIddictLiteDBContext
     /// Gets the <see cref="ILiteDatabase"/>.
     /// </summary>
     /// <returns>
-    /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the
+    /// A <see cref="ValueTask{ILiteDatabase}"/> that can be used to monitor the
     /// asynchronous operation, whose result returns the LiteDB database.
     /// </returns>
     ValueTask<ILiteDatabase> GetDatabaseAsync(CancellationToken cancellationToken);

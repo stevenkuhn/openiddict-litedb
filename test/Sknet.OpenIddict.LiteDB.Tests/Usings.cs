@@ -1,3 +1,5 @@
+global using Bogus;
+global using FluentAssertions;
 global using LiteDB;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
@@ -5,4 +7,10 @@ global using Moq;
 global using OpenIddict.Abstractions;
 global using OpenIddict.Core;
 global using Sknet.OpenIddict.LiteDB.Models;
+global using Sknet.OpenIddict.LiteDB.Tests.Builders;
+global using System.Collections.Generic;
+global using System.Collections.Immutable;
+global using System.Globalization;
+global using System.Text.Json;
 global using Xunit;
+global using static OpenIddict.Abstractions.OpenIddictConstants;

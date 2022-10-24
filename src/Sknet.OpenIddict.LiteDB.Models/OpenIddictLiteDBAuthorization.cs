@@ -37,7 +37,7 @@ public class OpenIddictLiteDBAuthorization
     /// Gets or sets the UTC creation date of the current authorization.
     /// </summary>
     [BsonField("creation_date")]
-    public virtual DateTime? CreationDate { get; set; }
+    public virtual DateTimeOffset? CreationDate { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier associated with the current authorization.
@@ -49,13 +49,13 @@ public class OpenIddictLiteDBAuthorization
     /// Gets or sets the additional properties associated with the current authorization.
     /// </summary>
     [BsonField("properties")]
-    public virtual IReadOnlyDictionary<string, JsonElement>? Properties { get; set; }
+    public virtual ImmutableDictionary<string, JsonElement>? Properties { get; set; }
 
     /// <summary>
     /// Gets or sets the scopes associated with the current authorization.
     /// </summary>
     [BsonField("scopes")]
-    public virtual IReadOnlyList<string>? Scopes { get; set; } = ImmutableList.Create<string>();
+    public virtual ImmutableArray<string>? Scopes { get; set; } = ImmutableArray.Create<string>();
 
     /// <summary>
     /// Gets or sets the status of the current authorization.

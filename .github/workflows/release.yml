@@ -29,8 +29,10 @@ jobs:
         path: ./artifacts
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Push assets to NuGet
-      env:
-        NuGet_Source: ${{ secrets.NUGET_SOURCE }}
-        NuGet_ApiKey: ${{ secrets.NUGET_APIKEY }}
-      run: ./build.sh --target PublishToNuGetFeed --skip PublishArtifacts
+    - name: Push assets to NuGet 
+      run: >
+        ./build.sh
+          --target PublishToNuGetFeed
+          --skip PublishArtifacts
+          --nuget-api-key ${{ secrets.NUGET_APIKEY }}
+          --nuget-source ${{ secrets.NUGET_SOURCE }}

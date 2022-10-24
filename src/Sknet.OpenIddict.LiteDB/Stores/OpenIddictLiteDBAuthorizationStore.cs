@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using static OpenIddict.Abstractions.OpenIddictConstants;
+
 namespace Sknet.OpenIddict.LiteDB;
 
 /// <summary>
@@ -140,8 +142,8 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client,
-        string status, CancellationToken cancellationToken)
+        string subject, string client, string status, 
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(subject))
         {
@@ -181,8 +183,8 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client,
-        string status, string type, CancellationToken cancellationToken)
+        string subject, string client, string status, string type,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(subject))
         {
@@ -228,8 +230,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client,
-        string status, string type,
+        string subject, string client, string status, string type,
         ImmutableArray<string> scopes, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(subject))
@@ -246,7 +247,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         {
             throw new ArgumentException("The status cannot be null or empty.", nameof(status));
         }
-
+        
         if (string.IsNullOrEmpty(type))
         {
             throw new ArgumentException("The type cannot be null or empty.", nameof(type));
@@ -258,15 +259,16 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         {
             var database = await Context.GetDatabaseAsync(cancellationToken);
             var collection = database.GetCollection<TAuthorization>(Options.CurrentValue.AuthorizationsCollectionName);
-
+          
             var authorizations = collection.Query()
                 .Where(entity =>
                     entity.Subject == subject &&
                     entity.ApplicationId == new ObjectId(client) &&
                     entity.Status == status &&
-                    entity.Type == type &&
-                    Enumerable.All(scopes, scope => entity.Scopes != null && entity.Scopes.Contains(scope)))
-                .ToEnumerable().ToAsyncEnumerable();
+                    entity.Type == type)
+                .ToEnumerable()
+                .Where(entity => scopes.All(scope => entity.Scopes!.Contains(scope)))
+                .ToAsyncEnumerable();
 
             await foreach (var authorization in authorizations)
             {
@@ -313,7 +315,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         var database = await Context.GetDatabaseAsync(cancellationToken);
         var collection = database.GetCollection<TAuthorization>(Options.CurrentValue.AuthorizationsCollectionName);
 
-        return collection.FindById(identifier);
+        return collection.FindById(new ObjectId(identifier));
     }
 
     /// <inheritdoc/>
@@ -390,7 +392,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
             return new(result: null);
         }
 
-        return new(DateTime.SpecifyKind(authorization.CreationDate.Value, DateTimeKind.Utc));
+        return new(authorization.CreationDate);
     }
 
     /// <inheritdoc/>
@@ -414,10 +416,10 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
 
         if (authorization.Properties is null || authorization.Properties.Count == 0)
         {
-            return new(ImmutableDictionary.Create<string, JsonElement>());
+            return new(ImmutableDictionary<string, JsonElement>.Empty);
         }
 
-        return new(authorization.Properties.ToImmutableDictionary());
+        return new(authorization.Properties);
     }
 
     /// <inheritdoc/>
@@ -428,12 +430,12 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
             throw new ArgumentNullException(nameof(authorization));
         }
 
-        if (authorization.Scopes is not { Count: > 0 })
+        if (authorization.Scopes is not { Length: > 0 })
         {
-            return new(ImmutableArray.Create<string>());
+            return new(ImmutableArray<string>.Empty);
         }
 
-        return new(authorization.Scopes.ToImmutableArray());
+        return new(authorization.Scopes.Value);
     }
 
     /// <inheritdoc/>
@@ -526,57 +528,46 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
             }
         }
     }
-
+    
     /// <inheritdoc/>
-    public virtual ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
+    public async virtual ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var database = await Context.GetDatabaseAsync(cancellationToken);
+        var authorizationCollection = database.GetCollection<TAuthorization>(Options.CurrentValue.AuthorizationsCollectionName);
 
-        //var database = await Context.GetDatabaseAsync(cancellationToken);
-        //var collection = database.GetCollection<TAuthorization>(Options.CurrentValue.AuthorizationsCollectionName);
+        var query = from auth in authorizationCollection.Query()
+                    // only prune authorizations created before threshold
+                    where auth.CreationDate < threshold.UtcDateTime
+                    // prune tokens that are not valid
+                    where auth.Status != Statuses.Valid
+                    select auth.Id;
+        var authorizations = query.ToList();
 
-        // Note: directly deleting the resulting set of an aggregate query is not supported by MongoDb
-        // To work around this limitation, the authorization identifiers are stored in an intermediate
-        // list and delete requests are sent to remove the documents corresponding to these identifiers.
+        // prune adhoc authorizations that have no tokens
+        query = from auth in authorizationCollection.Query()
+                where auth.CreationDate < threshold.UtcDateTime
+                where auth.Status == Statuses.Valid
+                where auth.Type == AuthorizationTypes.AdHoc
+                select auth.Id;
+        var adhocAuthorizations = new HashSet<ObjectId>(query.ToEnumerable());
 
-        //var identifiers =
-        //    await (from authorization in collection.AsQueryable()
-        //           join token in database.GetCollection<OpenIddictLiteDBToken>(Options.CurrentValue.TokensCollectionName).AsQueryable()
-        //                      on authorization.Id equals token.AuthorizationId into tokens
-        //           where authorization.CreationDate < threshold.UtcDateTime
-        //           where authorization.Status != Statuses.Valid ||
-        //                (authorization.Type == AuthorizationTypes.AdHoc && !tokens.Any())
-        //           select authorization.Id).ToListAsync(cancellationToken);
+        var tokenCollection = database.GetCollection(Options.CurrentValue.TokensCollectionName);
+        var adhocAuthorizationsWithTokens = new HashSet<ObjectId>(tokenCollection.Query()
+            .GroupBy("authorization_id")
+            .Where(x => adhocAuthorizations.Contains(x["authorization_id"]))
+            .Select("{authorization_id:@key}")
+            .ToEnumerable()
+            .Select(x => x["authorization_id"].AsObjectId));
 
-        // Note: to avoid generating delete requests with very large filters, a buffer is used here and the
-        // maximum number of elements that can be removed by a single call to PruneAsync() is deliberately limited.
-        //foreach (var buffer in Buffer(identifiers.Take(1_000_000), 1_000))
-        //{
-        //    await collection.DeleteManyAsync(authorization => buffer.Contains(authorization.Id), cancellationToken);
-        //}
+        adhocAuthorizations.SymmetricExceptWith(adhocAuthorizationsWithTokens);
+        authorizations.AddRange(adhocAuthorizations);
 
-        //static IEnumerable<List<TSource>> Buffer<TSource>(IEnumerable<TSource> source, int count)
-        //{
-        //    List<TSource>? buffer = null;
-
-        //    foreach (var element in source)
-        //    {
-        //        buffer ??= new List<TSource>(capacity: 1);
-        //        buffer.Add(element);
-
-        //        if (buffer.Count == count)
-        //        {
-        //            yield return buffer;
-
-        //            buffer = null;
-        //        }
-        //    }
-
-        //    if (buffer is not null)
-        //    {
-        //        yield return buffer;
-        //    }
-        //}
+        database.BeginTrans();
+        foreach (var authorization in authorizations)
+        {
+            authorizationCollection.Delete(authorization);
+        }
+        database.Commit();
     }
 
     /// <inheritdoc/>
@@ -592,7 +583,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         {
             authorization.ApplicationId = new ObjectId(identifier);
         }
-
         else
         {
             authorization.ApplicationId = ObjectId.Empty;
@@ -611,7 +601,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         }
 
         authorization.CreationDate = date?.UtcDateTime;
-
         return default;
     }
 
@@ -627,12 +616,10 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         if (properties is not { Count: > 0 })
         {
             authorization.Properties = null;
-
             return default;
         }
 
         authorization.Properties = properties;
-
         return default;
     }
 
@@ -648,12 +635,10 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         if (scopes.IsDefaultOrEmpty)
         {
             authorization.Scopes = null;
-
             return default;
         }
 
-        authorization.Scopes = scopes.ToImmutableList();
-
+        authorization.Scopes = scopes;
         return default;
     }
 
@@ -666,7 +651,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         }
 
         authorization.Status = status;
-
         return default;
     }
 
@@ -679,7 +663,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         }
 
         authorization.Subject = subject;
-
         return default;
     }
 
@@ -692,7 +675,6 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
         }
 
         authorization.Type = type;
-
         return default;
     }
 

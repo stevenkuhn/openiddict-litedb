@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using static OpenIddict.Abstractions.OpenIddictConstants;
+
 namespace Sknet.OpenIddict.LiteDB;
 
 /// <summary>
@@ -285,7 +287,7 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         var database = await Context.GetDatabaseAsync(cancellationToken);
         var collection = database.GetCollection<TToken>(Options.CurrentValue.TokensCollectionName);
 
-        return collection.FindById(identifier);
+        return collection.FindById(new ObjectId(identifier));
     }
 
     /// <inheritdoc/>
@@ -393,7 +395,7 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
             return new(result: null);
         }
 
-        return new(DateTime.SpecifyKind(token.CreationDate.Value, DateTimeKind.Utc));
+        return new(token.CreationDate);
     }
 
     /// <inheritdoc/>
@@ -409,7 +411,7 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
             return new(result: null);
         }
 
-        return new(DateTime.SpecifyKind(token.ExpirationDate.Value, DateTimeKind.Utc));
+        return new(token.ExpirationDate);
     }
 
     /// <inheritdoc/>
@@ -444,10 +446,10 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
 
         if (token.Properties is null || token.Properties.Count == 0)
         {
-            return new(ImmutableDictionary.Create<string, JsonElement>());
+            return new(ImmutableDictionary<string, JsonElement>.Empty);
         }
 
-        return new(token.Properties.ToImmutableDictionary());
+        return new(token.Properties);
     }
 
     /// <inheritdoc/>
@@ -463,7 +465,7 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
             return new(result: null);
         }
 
-        return new(DateTime.SpecifyKind(token.RedemptionDate.Value, DateTimeKind.Utc));
+        return new(token.RedemptionDate);
     }
 
     /// <inheritdoc/>
@@ -569,56 +571,38 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
     }
 
     /// <inheritdoc/>
-    public virtual ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
+    public async virtual ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var database = await Context.GetDatabaseAsync(cancellationToken);
 
-        //var database = await Context.GetDatabaseAsync(cancellationToken);
-        //var collection = database.GetCollection<TToken>(Options.CurrentValue.TokensCollectionName);
+        // Get invalid authorizations from which tokens can be pruned
+        var invalidAuthorizations = database
+            .GetCollection(Options.CurrentValue.AuthorizationsCollectionName)
+            .Query()
+            .Where("$.Status != @0", Statuses.Valid)
+            .Select(x => x["_id"].AsObjectId)
+            .ToList();
+        
+        var tokenCollection = database.GetCollection<TToken>(Options.CurrentValue.TokensCollectionName);
+        var query = from token in tokenCollection.Query()
+                     // only prune tokens created before threshold
+                     where token.CreationDate < threshold.UtcDateTime
+                     // prune tokens that either
+                     // 1. not inactive and not valid,
+                     // 2. past expiration date, OR
+                     // 3. belong to an invalid authorization
+                     where (token.Status != Statuses.Inactive && token.Status != Statuses.Valid)
+                        || token.ExpirationDate < DateTimeOffset.UtcNow
+                        || invalidAuthorizations.Contains(token.AuthorizationId)
+                     select token.Id;
+        var tokens = query.ToList();
 
-        //// Note: directly deleting the resulting set of an aggregate query is not supported by MongoDb.
-        //// To work around this limitation, the token identifiers are stored in an intermediate list
-        //// and delete requests are sent to remove the documents corresponding to these identifiers.
-
-        //var identifiers =
-        //    await (from token in collection.AsQueryable()
-        //           join authorization in database.GetCollection<OpenIddictLiteDBAuthorization>(Options.CurrentValue.AuthorizationsCollectionName).AsQueryable()
-        //                              on token.AuthorizationId equals authorization.Id into authorizations
-        //           where token.CreationDate < threshold.UtcDateTime
-        //           where (token.Status != Statuses.Inactive && token.Status != Statuses.Valid) ||
-        //                  token.ExpirationDate < DateTime.UtcNow ||
-        //                  authorizations.Any(authorization => authorization.Status != Statuses.Valid)
-        //           select token.Id).ToListAsync(cancellationToken);
-
-        //// Note: to avoid generating delete requests with very large filters, a buffer is used here and the
-        //// maximum number of elements that can be removed by a single call to PruneAsync() is deliberately limited.
-        //foreach (var buffer in Buffer(identifiers.Take(1_000_000), 1_000))
-        //{
-        //    await collection.DeleteManyAsync(token => buffer.Contains(token.Id), cancellationToken);
-        //}
-
-        //static IEnumerable<List<TSource>> Buffer<TSource>(IEnumerable<TSource> source, int count)
-        //{
-        //    List<TSource>? buffer = null;
-
-        //    foreach (var element in source)
-        //    {
-        //        buffer ??= new List<TSource>(capacity: 1);
-        //        buffer.Add(element);
-
-        //        if (buffer.Count == count)
-        //        {
-        //            yield return buffer;
-
-        //            buffer = null;
-        //        }
-        //    }
-
-        //    if (buffer is not null)
-        //    {
-        //        yield return buffer;
-        //    }
-        //}
+        database.BeginTrans();
+        foreach (var token in tokens)
+        {
+            tokenCollection.Delete(token);
+        }
+        database.Commit();
     }
 
     /// <inheritdoc/>
@@ -633,7 +617,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         {
             token.ApplicationId = new ObjectId(identifier);
         }
-
         else
         {
             token.ApplicationId = ObjectId.Empty;
@@ -654,7 +637,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         {
             token.AuthorizationId = new ObjectId(identifier);
         }
-
         else
         {
             token.AuthorizationId = ObjectId.Empty;
@@ -672,7 +654,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.CreationDate = date?.UtcDateTime;
-
         return default;
     }
 
@@ -685,7 +666,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.ExpirationDate = date?.UtcDateTime;
-
         return default;
     }
 
@@ -698,7 +678,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.Payload = payload;
-
         return default;
     }
 
@@ -714,12 +693,10 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         if (properties is not { Count: > 0 })
         {
             token.Properties = null;
-
             return default;
         }
 
         token.Properties = properties;
-
         return default;
     }
 
@@ -732,7 +709,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.RedemptionDate = date?.UtcDateTime;
-
         return default;
     }
 
@@ -745,7 +721,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.ReferenceId = identifier;
-
         return default;
     }
 
@@ -758,7 +733,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.Status = status;
-
         return default;
     }
 
@@ -771,7 +745,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.Subject = subject;
-
         return default;
     }
 
@@ -784,7 +757,6 @@ public class OpenIddictLiteDBTokenStore<TToken> : IOpenIddictTokenStore<TToken>
         }
 
         token.Type = type;
-
         return default;
     }
 

@@ -111,7 +111,7 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         var database = await Context.GetDatabaseAsync(cancellationToken);
         var collection = database.GetCollection<TScope>(Options.CurrentValue.ScopesCollectionName);
 
-        return collection.FindById(identifier);
+        return collection.FindById(new ObjectId(identifier));
     }
 
     /// <inheritdoc/>
@@ -221,12 +221,10 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
 
         if (scope.Descriptions is not { Count: > 0 })
         {
-            return new(ImmutableDictionary.Create<CultureInfo, string>());
+            return new(ImmutableDictionary<CultureInfo, string>.Empty);
         }
 
-        return new(scope.Descriptions.ToImmutableDictionary(
-            pair => CultureInfo.GetCultureInfo(pair.Key),
-            pair => pair.Value));
+        return new(scope.Descriptions);
     }
 
     /// <inheritdoc/>
@@ -250,12 +248,10 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
 
         if (scope.DisplayNames is not { Count: > 0 })
         {
-            return new(ImmutableDictionary.Create<CultureInfo, string>());
+            return new(ImmutableDictionary<CultureInfo, string>.Empty);
         }
 
-        return new(scope.DisplayNames.ToImmutableDictionary(
-            pair => CultureInfo.GetCultureInfo(pair.Key),
-            pair => pair.Value));
+        return new(scope.DisplayNames);
     }
 
     /// <inheritdoc/>
@@ -290,10 +286,10 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
 
         if (scope.Properties is null || scope.Properties.Count == 0)
         {
-            return new(ImmutableDictionary.Create<string, JsonElement>());
+            return new(ImmutableDictionary<string, JsonElement>.Empty);
         }
 
-        return new(scope.Properties.ToImmutableDictionary());
+        return new(scope.Properties);
     }
 
     /// <inheritdoc/>
@@ -304,12 +300,12 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
             throw new ArgumentNullException(nameof(scope));
         }
 
-        if (scope.Resources is not { Count: > 0 })
+        if (scope.Resources is not { Length: > 0 })
         {
-            return new(ImmutableArray.Create<string>());
+            return new(ImmutableArray<string>.Empty);
         }
 
-        return new(scope.Resources.ToImmutableArray());
+        return new(scope.Resources.Value);
     }
 
     /// <inheritdoc/>
@@ -319,7 +315,6 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         {
             return new(Activator.CreateInstance<TScope>());
         }
-
         catch (MemberAccessException exception)
         {
             return new(Task.FromException<TScope>(
@@ -379,7 +374,6 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         }
 
         scope.Description = description;
-
         return default;
     }
 
@@ -395,14 +389,10 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         if (descriptions is not { Count: > 0 })
         {
             scope.Descriptions = null;
-
             return default;
         }
 
-        scope.Descriptions = descriptions.ToImmutableDictionary(
-            pair => pair.Key.Name,
-            pair => pair.Value);
-
+        scope.Descriptions = descriptions;
         return default;
     }
 
@@ -418,14 +408,10 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         if (names is not { Count: > 0 })
         {
             scope.DisplayNames = null;
-
             return default;
         }
 
-        scope.DisplayNames = names.ToImmutableDictionary(
-            pair => pair.Key.Name,
-            pair => pair.Value);
-
+        scope.DisplayNames = names;
         return default;
     }
 
@@ -438,7 +424,6 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         }
 
         scope.DisplayName = name;
-
         return default;
     }
 
@@ -451,7 +436,6 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         }
 
         scope.Name = name;
-
         return default;
     }
 
@@ -467,12 +451,10 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         if (properties is not { Count: > 0 })
         {
             scope.Properties = null;
-
             return default;
         }
 
         scope.Properties = properties;
-
         return default;
     }
 
@@ -487,12 +469,10 @@ public class OpenIddictLiteDBScopeStore<TScope> : IOpenIddictScopeStore<TScope>
         if (resources.IsDefaultOrEmpty)
         {
             scope.Resources = null;
-
             return default;
         }
 
-        scope.Resources = resources.ToImmutableList();
-
+        scope.Resources = resources;
         return default;
     }
 
