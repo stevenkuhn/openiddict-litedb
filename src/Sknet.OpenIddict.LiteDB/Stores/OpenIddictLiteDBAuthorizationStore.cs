@@ -267,7 +267,7 @@ public class OpenIddictLiteDBAuthorizationStore<TAuthorization> : IOpenIddictAut
                     entity.Status == status &&
                     entity.Type == type)
                 .ToEnumerable()
-                .Where(entity => scopes.All(scope => entity.Scopes.Contains(scope)))
+                .Where(entity => scopes.All(scope => entity.Scopes!.Contains(scope)))
                 .ToAsyncEnumerable();
 
             await foreach (var authorization in authorizations)
